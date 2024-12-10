@@ -45,4 +45,11 @@ namespace ZR.Model.GuiHis
         public string BatchNo { get; set; }
         public string ProducerCode { get; set; }
     }
+
+    public class reqPhaStorage
+    {
+        public int Total { get; set; }
+        public List<PhaStorage> Data { get; set; }
+    }
 }
+

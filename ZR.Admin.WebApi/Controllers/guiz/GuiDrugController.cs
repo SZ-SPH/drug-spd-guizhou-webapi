@@ -5,6 +5,11 @@ using MiniExcelLibs;
 using ZR.Model.GuiHis;
 using ZR.Model.GuiHis.Dto;
 using ZR.Service.Guiz.IGuizService;
+using Newtonsoft.Json;
+using System.Text;
+using ZR.Admin.WebApi.Controllers.Business;
+using System.Reflection.Metadata.Ecma335;
+using Aliyun.OSS;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -53,13 +58,13 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// <summary>
         /// 查询药品详情
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="DrugTermId"></param>
         /// <returns></returns>
         [HttpGet("{Id}")]
         [ActionPermissionFilter(Permission = "guidrug:query")]
-        public IActionResult GetGuiDrug(int Id)
+        public IActionResult GetGuiDrug(string DrugTermId)
         {
-            var response = _GuiDrugService.GetInfo(Id);
+            var response = _GuiDrugService.GetInfo(DrugTermId);
 
             var info = response.Adapt<GuiDrugDto>();
             return SUCCESS(info);
@@ -177,6 +182,77 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             var result = DownloadImportTemplate(new List<GuiDrugDto>() { }, "GuiDrug");
             return ExportExcel(result.Item2, result.Item1);
         }
+
+
+        /// <summary>
+        /// 同步
+        /// </summary>
+        /// <param name="parmlist"></param>
+        /// <returns></returns>
+        [HttpGet("TongBu")]
+        public async Task<IActionResult> TongBu()
+        {
+            try
+            {
+                GuiDrugInQuery guiDrugInQuery = new GuiDrugInQuery();
+                guiDrugInQuery.pageFlag = true;
+                guiDrugInQuery.PageSize = 10;
+                guiDrugInQuery.PageNum = 1;
+                var x = await SendRequestsAsync(guiDrugInQuery);
+                if (x.Data.Total > 0)
+                {
+                    guiDrugInQuery.PageSize = (int?)x.Data.Total;
+                    var y = await SendRequestsAsync(guiDrugInQuery);
+                    foreach (var item in y.Data.List)
+                    {
+                        var nu = _GuiDrugService.GetInfo(item.DrugTermId);
+                        if (nu != null)
+                        {
+                            //进行修改
+                            var modal = nu.Adapt<GuiDrug>().ToUpdate(HttpContext);
+                            var response = _GuiDrugService.UpdateGuiDrug(modal);
+                        }
+                        else if (nu == null)
+                        {
+                            //进行新增
+                            var modal = nu.Adapt<GuiDrug>().ToCreate(HttpContext);
+                            var response = _GuiDrugService.AddGuiDrug(modal);
+                        }
+                    }
+                }
+
+                return SUCCESS("true");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        private async Task<ApiResponse> SendRequestsAsync(GuiDrugInQuery requests)
+        {
+                using (var client = new HttpClient())
+                {
+                //?pageSize=10&pageNum=1&pageFlag=true
+
+                string url = "http://192.168.1.95:7801/roc/order-service/api/v1/order/order-term/drug/query";
+                    var json = JsonConvert.SerializeObject(requests);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(url, content);
+                    // 获取响应内容
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // 解析 JSON 响应
+                        var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
+                       return apiResponse; // 返回 ApiResponse 对象
+                }
+                    else
+                    {
+                        // 处理错误
+                        throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
+                    }
+                }
+            }
 
     }
 }

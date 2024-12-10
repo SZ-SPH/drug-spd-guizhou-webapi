@@ -10,7 +10,7 @@ namespace ZR.Service.Guiz.IGuizService
     {
         PagedInfo<DepartmentsDto> GetList(DepartmentsQueryDto parm);
 
-        Departments GetInfo(int Id);
+        Departments GetInfo(string DeptCode);
 
 
         Departments AddDepartments(Departments parm);

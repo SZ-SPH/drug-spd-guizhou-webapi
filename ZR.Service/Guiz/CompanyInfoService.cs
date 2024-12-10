@@ -34,12 +34,12 @@ namespace ZR.Service.Guiz
         /// <summary>
         /// 获取详情
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="FacCode"></param>
         /// <returns></returns>
-        public CompanyInfo GetInfo(int Id)
+        public CompanyInfo GetInfo(string FacCode)
         {
             var response = Queryable()
-                //.Where(x => x. == Id)
+                .Where(x => x.FacCode == FacCode)
                 .First();
 
             return response;

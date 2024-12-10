@@ -10,7 +10,7 @@ namespace ZR.Service.Guiz.IGuizService
     {
         PagedInfo<CompanyInfoDto> GetList(CompanyInfoQueryDto parm);
 
-        CompanyInfo GetInfo(int Id);
+        CompanyInfo GetInfo(string facCode);
 
 
         CompanyInfo AddCompanyInfo(CompanyInfo parm);

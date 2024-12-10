@@ -9,7 +9,7 @@ namespace ZR.Service.Guiz.IGuizService
     {
         PagedInfo<GuiDrugDto> GetList(GuiDrugQueryDto parm);
 
-        GuiDrug GetInfo(int Id);
+        GuiDrug GetInfo(string DrugTermId);
 
 
         GuiDrug AddGuiDrug(GuiDrug parm);

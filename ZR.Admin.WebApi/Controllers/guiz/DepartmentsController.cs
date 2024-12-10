@@ -5,6 +5,9 @@ using MiniExcelLibs;
 using ZR.Model.GuiHis;
 using ZR.Model.GuiHis.Dto;
 using ZR.Service.Guiz.IGuizService;
+using Newtonsoft.Json;
+using System.Text;
+using ZR.Service.Guiz;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -47,9 +50,9 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// <returns></returns>
         [HttpGet("{Id}")]
         [ActionPermissionFilter(Permission = "departments:query")]
-        public IActionResult GetDepartments(int Id)
+        public IActionResult GetDepartments(string DeptCode)
         {
-            var response = _DepartmentsService.GetInfo(Id);
+            var response = _DepartmentsService.GetInfo(DeptCode);
 
             var info = response.Adapt<DepartmentsDto>();
             return SUCCESS(info);
@@ -166,6 +169,80 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         {
             var result = DownloadImportTemplate(new List<DepartmentsDto>() { }, "Departments");
             return ExportExcel(result.Item2, result.Item1);
+        }
+
+
+
+
+        /// <summary>
+        /// 同步 http://192.168.1.95:7801/roc/curr-web/api/v1/common/dept/query?deptCode=&deptType=
+        /// </summary>
+        /// <param name="parmlist"></param>
+        /// <returns></returns>
+        [HttpGet("TongBu")]
+        public async Task<IActionResult> TongBu()
+        {
+            try
+            {
+                DepartmentsQuery departmentsQuery = new DepartmentsQuery();
+                departmentsQuery.DeptCode = null;
+                departmentsQuery.DeptType = null;
+                var x = await SendRequestsAsync(departmentsQuery);
+                foreach (var item in x.Data)
+                {
+                    var nu = _DepartmentsService.GetInfo(item.DeptCode);
+                    if (nu != null)
+                    {
+                        //进行修改
+                        Departments departments = new Departments();
+                        departments.DeptCode = item.DeptCode;
+                        departments.DeptEname = item.DeptEname;
+                        departments.DeptName = item.DeptName;
+                        departments.SpellCode = item.SpellCode;
+                        departments.WbCode = item.WbCode;
+                        _DepartmentsService.UpdateDepartments(departments);
+                    }
+                    else if (nu == null)
+                    {
+                        Departments departments = new Departments();
+                        departments.DeptCode = item.DeptCode;
+                        departments.DeptEname = item.DeptEname;
+                        departments.DeptName = item.DeptName;
+                        departments.SpellCode = item.SpellCode;
+                        departments.WbCode = item.WbCode;
+                        _DepartmentsService.AddDepartments(departments);
+                    }
+                }
+
+                return SUCCESS("true");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        private async Task<QueryResponse> SendRequestsAsync(DepartmentsQuery requests)
+        {
+            using (var client = new HttpClient())
+            {
+                string url = "http://192.168.1.95:7801/roc/curr-web/api/v1/common/dept/query";
+                var json = JsonConvert.SerializeObject(requests);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(url, content);
+                // 获取响应内容
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // 解析 JSON 响应
+                    var apiResponse = JsonConvert.DeserializeObject<QueryResponse>(responseContent);
+                    return apiResponse; // 返回 ApiResponse 对象
+                }
+                else
+                {
+                    // 处理错误
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
+                }
+            }
         }
 
     }

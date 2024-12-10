@@ -10,7 +10,7 @@ namespace ZR.Service.Guiz.IGuizService
     {
         PagedInfo<PhaOutDto> GetList(PhaOutQueryDto parm);
 
-        PhaOut GetInfo(int Id);
+        PhaOut GetInfo(long outBillCode);
 
 
         PhaOut AddPhaOut(PhaOut parm);

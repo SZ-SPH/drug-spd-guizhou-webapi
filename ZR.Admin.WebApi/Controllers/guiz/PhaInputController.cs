@@ -168,5 +168,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             return ExportExcel(result.Item2, result.Item1);
         }
 
+        //推送 入库  http://ip:port/His/PhaInput
+
     }
 }

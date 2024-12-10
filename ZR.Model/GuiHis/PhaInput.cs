@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 namespace ZR.Model.GuiHis
 
 {
-
+    // http://192.168.2.21:9403/His/PhaInput
+    //入库接口
     [SugarTable("PhaInput")]
-
-
     public class PhaInput
     {
         public decimal PlanNo { get; set; } // 入库计划流水号

@@ -35,12 +35,12 @@ namespace ZR.Service.Guiz
         /// <summary>
         /// 获取详情
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="DeptCode"></param>
         /// <returns></returns>
-        public Departments GetInfo(int Id)
+        public Departments GetInfo(string DeptCode)
         {
             var response = Queryable()
-                //.Where(x => x.Id == Id)
+                .Where(x => x.DeptCode == DeptCode)
                 .First();
 
             return response;

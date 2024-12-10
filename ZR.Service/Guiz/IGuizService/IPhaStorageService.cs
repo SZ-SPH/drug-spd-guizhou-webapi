@@ -11,6 +11,7 @@ namespace ZR.Service.Guiz.IGuizService
         PagedInfo<PhaStorageDto> GetList(PhaStorageQueryDto parm);
 
         PhaStorage GetInfo(int Id);
+        PhaStorage GetisInfo(string DrugCode, string DeptCode);
 
 
         PhaStorage AddPhaStorage(PhaStorage parm);

@@ -34,12 +34,12 @@ namespace ZR.Service.Guiz
         /// <summary>
         /// 获取详情
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="DrugTermId"></param>
         /// <returns></returns>
-        public GuiDrug GetInfo(int Id)
+        public GuiDrug GetInfo(string DrugTermId)
         {
             var response = Queryable()
-                //.Where(x => x.Id == Id)
+                .Where(x => x.DrugTermId == DrugTermId)
                 .First();
 
             return response;

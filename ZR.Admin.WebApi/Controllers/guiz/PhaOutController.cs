@@ -5,6 +5,9 @@ using MiniExcelLibs;
 using ZR.Model.GuiHis;
 using ZR.Model.GuiHis.Dto;
 using ZR.Service.Guiz.IGuizService;
+using Newtonsoft.Json;
+using System.Text;
+using ZR.Service.Guiz;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -43,13 +46,13 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// <summary>
         /// 查询出库记录详情
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="outBillCode"></param>
         /// <returns></returns>
-        [HttpGet("{Id}")]
+        [HttpGet("{outBillCode}")]
         [ActionPermissionFilter(Permission = "phaout:query")]
-        public IActionResult GetPhaOut(int Id)
+        public IActionResult GetPhaOut(long outBillCode)
         {
-            var response = _PhaOutService.GetInfo(Id);
+            var response = _PhaOutService.GetInfo(outBillCode);
 
             var info = response.Adapt<PhaOutDto>();
             return SUCCESS(info);
@@ -167,6 +170,73 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             var result = DownloadImportTemplate(new List<PhaOutDto>() { }, "PhaOut");
             return ExportExcel(result.Item2, result.Item1);
         }
+
+        //http://192.168.2.21:9403/His/GetPhaInPlanList?beginTime=2024-01-01&endTime=2024-01-31
+        //http://ip:port/His/GetPhaOutList
+        //
+        /// <summary>
+        /// 同步
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        public async Task<IActionResult> TongBu()
+        {
+            try
+            {
+                PhaOutInQuery phaOutInQuery = new PhaOutInQuery();
+                phaOutInQuery.beginTime = new DateTime(2024, 12, 1);
+                phaOutInQuery.endTime = DateTime.Now;
+                var x = await SendRequestsAsync(phaOutInQuery);
+                
+                foreach (var item in x)
+                {
+                    var nu = _PhaOutService.GetInfo(item.OutBillCode);
+                    if (nu != null)
+                    {
+                        var modal = nu.Adapt<PhaOut>().ToUpdate(HttpContext);
+                        _PhaOutService.UpdatePhaOut(modal);
+                    }
+                    else if (nu == null)
+                    {
+                        var modal = nu.Adapt<PhaOut>().ToCreate(HttpContext);
+                        _PhaOutService.UpdatePhaOut(modal);
+                    }
+                }
+
+                return SUCCESS("true");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        private async Task<List<PhaOut>> SendRequestsAsync(PhaOutInQuery phaOutInQuery)
+        {
+            using (var client = new HttpClient())
+            {
+                //http://192.168.2.21:9403/His/GetPhaInPlanList
+                string url = "http://192.168.2.21:9403/His/GetPhaOutList";
+                var json = JsonConvert.SerializeObject(phaOutInQuery);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(url, content);
+                // 获取响应内容
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // 解析 JSON 响应
+                    var apiResponse = JsonConvert.DeserializeObject<List<PhaOut>>(responseContent);
+                    return apiResponse; // 返回 ApiResponse 对象
+                }
+                else
+                {
+                    // 处理错误
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
+                }
+            }
+        }
+
+
+
 
     }
 }

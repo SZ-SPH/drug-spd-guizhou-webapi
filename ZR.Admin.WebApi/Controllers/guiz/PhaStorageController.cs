@@ -5,6 +5,9 @@ using MiniExcelLibs;
 using ZR.Model.GuiHis;
 using ZR.Model.GuiHis.Dto;
 using ZR.Service.Guiz.IGuizService;
+using Newtonsoft.Json;
+using System.Text;
+using ZR.Service.Guiz;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -20,10 +23,13 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// 库存接口
         /// </summary>
         private readonly IPhaStorageService _PhaStorageService;
+        private readonly IDrugStoreService _DrugStoreService;
 
-        public PhaStorageController(IPhaStorageService PhaStorageService)
+
+        public PhaStorageController(IPhaStorageService PhaStorageService, IDrugStoreService drugStoreService)
         {
             _PhaStorageService = PhaStorageService;
+            _DrugStoreService = drugStoreService;
         }
 
         /// <summary>
@@ -168,5 +174,68 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             return ExportExcel(result.Item2, result.Item1);
         }
 
+        /// <summary>
+        //http://192.168.2.21:9403/His/GetPhaStorage?drugDeptCode=6052
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        [HttpGet("TongBu")]
+        public async Task<IActionResult> TongBu()
+        {
+            try
+            {
+                var dep= _DrugStoreService.GetAll();
+                foreach (var item in dep)
+                {
+                    PhaStorageInQuery phaStorageInQuery = new PhaStorageInQuery();
+                    phaStorageInQuery.DrugDeptCode = item.DrugDeptCode;
+                    reqPhaStorage x = await SendRequestsAsync(phaStorageInQuery);
+                    foreach (var items in x.Data)
+                    {
+                        var nu = _PhaStorageService.GetisInfo(items.DrugCode,item.DrugDeptCode);
+                            if (nu != null)
+                            {
+                                var modal = nu.Adapt<PhaStorage>().ToUpdate(HttpContext);
+                                _PhaStorageService.UpdatePhaStorage(modal);
+                            }
+                            else if (nu == null)
+                            {
+                                var modal = nu.Adapt<PhaStorage>().ToCreate(HttpContext);
+                                 _PhaStorageService.AddPhaStorage(modal);
+                            }
+                    }
+
+                }
+                return SUCCESS("true");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        private async Task<reqPhaStorage> SendRequestsAsync(PhaStorageInQuery PhaStorageInQuery)
+        {
+            using (var client = new HttpClient())
+            {
+                string url = "http://192.168.2.21:9403/His/GetPhaStorage";
+                var json = JsonConvert.SerializeObject(PhaStorageInQuery);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(url, content);
+                // 获取响应内容
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // 解析 JSON 响应
+                    var apiResponse = JsonConvert.DeserializeObject<reqPhaStorage>(responseContent);
+                    return apiResponse; // 返回 ApiResponse 对象
+                }
+                else
+                {
+                    // 处理错误
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
+                }
+            }
+        }
     }
 }

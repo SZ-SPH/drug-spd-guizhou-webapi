@@ -5,6 +5,9 @@ using MiniExcelLibs;
 using ZR.Model.GuiHis;
 using ZR.Model.GuiHis.Dto;
 using ZR.Service.Guiz.IGuizService;
+using Newtonsoft.Json;
+using System.Text;
+using ZR.Service.Guiz;
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
 {
@@ -166,6 +169,73 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             var result = DownloadImportTemplate(new List<PhaInPlanDto>() { }, "PhaInPlan");
             return ExportExcel(result.Item2, result.Item1);
         }
+        /// <summary>
+        /// 同步
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        /// 
+        [HttpGet("TongBu")]
 
-    }
+        public async Task<IActionResult> TongBu()
+        {
+            try
+            {
+                PhaInPlanInQuery planInQuery = new PhaInPlanInQuery();
+                planInQuery.beginTime = new DateTime(2024, 12, 1);
+                planInQuery.endTime = DateTime.Now;
+                var x = await SendRequestsAsync(planInQuery);
+                foreach (var item in x)
+                {
+                    var n = _PhaInPlanService.GetInfo(item.PlanNo);
+                    if (n != null)
+                    {
+                        var modal = n.Adapt<PhaInPlan>().ToUpdate(HttpContext);
+                        var response = _PhaInPlanService.UpdatePhaInPlan(modal);
+
+                    }
+                    else if (n == null)
+                    {
+                        var modal = n.Adapt<PhaInPlan>().ToCreate(HttpContext);
+                        var response = _PhaInPlanService.AddPhaInPlan(modal);
+                    }
+
+                }
+
+                return SUCCESS("true");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        private async Task<List<PhaInPlan>> SendRequestsAsync(PhaInPlanInQuery requests)
+        {
+            using (var client = new HttpClient())
+            {
+                //?pageSize=10&pageNum=1&pageFlag=true
+                //http://192.168.2.21:9403/His/GetPhaInPlanList?beginTime=2024-01-01&endTime=2024-01-31
+
+                string url = "http://192.168.2.21:9403/His/GetPhaInPlanList";
+                var json = JsonConvert.SerializeObject(requests);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(url, content);
+                // 获取响应内容
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // 解析 JSON 响应
+                    var apiResponse = JsonConvert.DeserializeObject<List<PhaInPlan>>(responseContent);
+                    return apiResponse; // 返回 ApiResponse 对象
+                }
+                else
+                {
+                    // 处理错误
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
+                }
+            }
+        }
+
+    
+}
 }

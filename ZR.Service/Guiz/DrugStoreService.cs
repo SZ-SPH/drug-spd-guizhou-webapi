@@ -1,4 +1,4 @@
-using Infrastructure.Attribute;
+﻿using Infrastructure.Attribute;
 using Infrastructure.Extensions;
 using ZR.Model.Business;
 using ZR.Repository;
@@ -6,26 +6,27 @@ using ZR.Model.GuiHis.Dto;
 using ZR.Service.Guiz.IGuizService;
 using ZR.Model.GuiHis;
 
+
 namespace ZR.Service.Guiz
 {
     /// <summary>
-    /// 库存Service业务层处理
+    /// 科室Service业务层处理
     /// </summary>
-    [AppService(ServiceType = typeof(IPhaStorageService), ServiceLifetime = LifeTime.Transient)]
-    public class PhaStorageService : BaseService<PhaStorage>, IPhaStorageService
+    [AppService(ServiceType = typeof(IDrugStoreService), ServiceLifetime = LifeTime.Transient)]
+    public class DrugStoreService : BaseService<DrugStore>, IDrugStoreService
     {
         /// <summary>
-        /// 查询库存列表
+        /// 查询科室列表
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<PhaStorageDto> GetList(PhaStorageQueryDto parm)
+        public PagedInfo<DrugStoreDto> GetList(DrugStoreQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
                 .Where(predicate.ToExpression())
-                .ToPage<PhaStorage, PhaStorageDto>(parm);
+                .ToPage<DrugStore, DrugStoreDto>(parm);
 
             return response;
         }
@@ -34,64 +35,59 @@ namespace ZR.Service.Guiz
         /// <summary>
         /// 获取详情
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="DrugDeptCode"></param>
         /// <returns></returns>
-        public PhaStorage GetInfo(int Id)
+        public DrugStore GetInfo(string DrugDeptCode)
         {
             var response = Queryable()
-                //.Where(x => x.Id == Id)
+                .Where(x => x.DrugDeptCode == DrugDeptCode)
                 .First();
 
             return response;
         }
 
         /// <summary>
-        /// 添加库存
+        /// 添加科室
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public PhaStorage AddPhaStorage(PhaStorage model)
+        public DrugStore AddDrugStore(DrugStore model)
         {
             return Insertable(model).ExecuteReturnEntity();
         }
 
         /// <summary>
-        /// 修改库存
+        /// 修改科室
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public int UpdatePhaStorage(PhaStorage model)
+        public int UpdateDrugStore(DrugStore model)
         {
             return Update(model, true);
         }
 
         /// <summary>
-        /// 清空库存
+        /// 清空科室
         /// </summary>
         /// <returns></returns>
-        public bool TruncatePhaStorage()
+        public bool TruncateDrugStore()
         {
-            var newTableName = $"PhaStorage_{DateTime.Now:yyyyMMdd}";
+            var newTableName = $"DrugStore_{DateTime.Now:yyyyMMdd}";
             if (Queryable().Any() && !Context.DbMaintenance.IsAnyTable(newTableName))
             {
-                Context.DbMaintenance.BackupTable("PhaStorage", newTableName);
+                Context.DbMaintenance.BackupTable("DrugStore", newTableName);
             }
 
             return Truncate();
         }
         /// <summary>
-        /// 导入库存
+        /// 导入科室
         /// </summary>
         /// <returns></returns>
-        public (string, object, object) ImportPhaStorage(List<PhaStorage> list)
+        public (string, object, object) ImportDrugStore(List<DrugStore> list)
         {
             var x = Context.Storageable(list)
                 .SplitInsert(it => !it.Any())
-                .SplitError(x => x.Item.DrugDeptCode.IsEmpty(), "库存科室不能为空")
-                .SplitError(x => x.Item.DrugCode.IsEmpty(), "药品编码不能为空")
-                .SplitError(x => x.Item.TradeName.IsEmpty(), "药品商品名不能为空")
-                .SplitError(x => x.Item.GroupCode.IsEmpty(), "批次号不能为空")
-                .SplitError(x => x.Item.ProducerCode.IsEmpty(), "生产厂家不能为空")
                 //.WhereColumns(it => it.UserName)//如果不是主键可以这样实现（多字段it=>new{it.x1,it.x2}）
                 .ToStorage();
             var result = x.AsInsertable.ExecuteCommand();//插入可插入部分;
@@ -113,17 +109,17 @@ namespace ZR.Service.Guiz
         }
 
         /// <summary>
-        /// 导出库存
+        /// 导出科室
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<PhaStorageDto> ExportList(PhaStorageQueryDto parm)
+        public PagedInfo<DrugStoreDto> ExportList(DrugStoreQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
                 .Where(predicate.ToExpression())
-                .Select((it) => new PhaStorageDto()
+                .Select((it) => new DrugStoreDto()
                 {
                 }, true)
                 .ToPage(parm);
@@ -136,28 +132,14 @@ namespace ZR.Service.Guiz
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        private static Expressionable<PhaStorage> QueryExp(PhaStorageQueryDto parm)
+        private static Expressionable<DrugStore> QueryExp(DrugStoreQueryDto parm)
         {
-            var predicate = Expressionable.Create<PhaStorage>();
+            var predicate = Expressionable.Create<DrugStore>();
 
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode == parm.DrugDeptCode);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), it => it.TradeName.Contains(parm.TradeName));
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugType), it => it.DrugType == parm.DrugType);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.PlaceCode), it => it.PlaceCode == parm.PlaceCode);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ProducerCode), it => it.ProducerCode == parm.ProducerCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode.Contains(parm.DrugDeptCode));
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptName), it => it.DrugDeptName.Contains(parm.DrugDeptName));
+        
             return predicate;
-        }
-
-        public PhaStorage GetisInfo(string DrugCode,string DeptCode)
-        {
-            var response = Queryable()
-               .Where(x => x.DrugCode == DrugCode&&x.DrugDeptCode==DeptCode)
-               .First();
-
-            return response;
-
-
         }
     }
 }

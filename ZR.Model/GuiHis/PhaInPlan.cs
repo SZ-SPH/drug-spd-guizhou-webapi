@@ -22,8 +22,10 @@ namespace ZR.Model.GuiHis
     public class PhaInPlan
     {
         public decimal PlanNo { get; set; } // 入库计划流水号
-
-        [SugarColumn(IsNullable = false)]
+        public string ApproveDate {  get; set; }
+        public string ApproveEmpl { get; set; }
+        public decimal StockNum {  get; set; }
+         [SugarColumn(IsNullable = false)]
         public string BillCode { get; set; } // 采购单号
 
         [SugarColumn(IsNullable = true)]

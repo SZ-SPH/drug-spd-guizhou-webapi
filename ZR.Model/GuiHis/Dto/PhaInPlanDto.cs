@@ -30,7 +30,9 @@ namespace ZR.Model.GuiHis.Dto
         [ExcelColumn(Name = "入库计划流水号")]
         [ExcelColumnName("入库计划流水号")]
         public decimal PlanNo { get; set; }
-
+        public string ApproveDate { get; set; }
+        public string ApproveEmpl { get; set; }
+        public decimal StockNum { get; set; }
         [Required(ErrorMessage = "采购单号不能为空")]
         [ExcelColumn(Name = "采购单号")]
         [ExcelColumnName("采购单号")]

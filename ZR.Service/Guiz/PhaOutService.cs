@@ -35,12 +35,12 @@ namespace ZR.Service.Guiz
         /// <summary>
         /// 获取详情
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="outBillCode"></param>
         /// <returns></returns>
-        public PhaOut GetInfo(int Id)
+        public PhaOut GetInfo(long outBillCode)
         {
             var response = Queryable()
-                //.Where(x => x.Id == Id)
+                .Where(x => x.OutBillCode == outBillCode)
                 .First();
 
             return response;

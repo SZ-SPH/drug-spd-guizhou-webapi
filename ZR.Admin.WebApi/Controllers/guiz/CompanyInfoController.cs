@@ -5,6 +5,9 @@ using MiniExcelLibs;
 using ZR.Model.GuiHis;
 using ZR.Model.GuiHis.Dto;
 using ZR.Service.Guiz.IGuizService;
+using Newtonsoft.Json;
+using System.Text;
+using ZR.Service.Guiz;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -43,13 +46,13 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// <summary>
         /// 查询厂家和供应商详情
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="facCode"></param>
         /// <returns></returns>
-        [HttpGet("{Id}")]
+        [HttpGet("{facCode}")]
         [ActionPermissionFilter(Permission = "companyinfo:query")]
-        public IActionResult GetCompanyInfo(int Id)
+        public IActionResult GetCompanyInfo(string facCode)
         {
-            var response = _CompanyInfoService.GetInfo(Id);
+            var response = _CompanyInfoService.GetInfo(facCode);
 
             var info = response.Adapt<CompanyInfoDto>();
             return SUCCESS(info);
@@ -166,6 +169,66 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         {
             var result = DownloadImportTemplate(new List<CompanyInfoDto>() { }, "CompanyInfo");
             return ExportExcel(result.Item2, result.Item1);
+        }
+
+
+        //http://192.168.1.95:7801/roc/curr-web/api/v1/curr/pharmaceutical/company?facCode=2002&compantyType=1&validFlag=0
+        /// <summary>
+        /// 同步
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        [HttpGet("TongBu")]
+        public async Task<IActionResult> TongBu()
+        {
+            try
+            {
+                CompanyInres companyInres = new CompanyInres();
+                var x = await SendRequestsAsync(companyInres);
+                foreach (var item in x.Data)
+                {
+                    var nu = _CompanyInfoService.GetInfo(item.FacCode);
+                    if (nu != null)
+                    {
+                        var modal = nu.Adapt<CompanyInfo>().ToUpdate(HttpContext);
+                        _CompanyInfoService.UpdateCompanyInfo(modal);
+                    }
+                    else if (nu == null)
+                    {
+                        var modal = nu.Adapt<CompanyInfo>().ToCreate(HttpContext);
+                        _CompanyInfoService.AddCompanyInfo(modal);
+                    }
+                }
+
+                return SUCCESS("true");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        private async Task<CompanyResponse> SendRequestsAsync(CompanyInres companyInres)
+        {
+            using (var client = new HttpClient())
+            {
+                string url = "http://192.168.1.95:7801/roc/curr-web/api/v1/curr/pharmaceutical/company";
+                var json = JsonConvert.SerializeObject(companyInres);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(url, content);
+                // 获取响应内容
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // 解析 JSON 响应
+                    var apiResponse = JsonConvert.DeserializeObject<CompanyResponse>(responseContent);
+                    return apiResponse; // 返回 ApiResponse 对象
+                }
+                else
+                {
+                    // 处理错误
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
+                }
+            }
         }
 
     }
