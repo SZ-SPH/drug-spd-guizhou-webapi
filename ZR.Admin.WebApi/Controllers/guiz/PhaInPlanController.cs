@@ -14,7 +14,8 @@ namespace ZR.Admin.WebApi.Controllers.Gui
     /// <summary>
     /// 入库计划
     /// </summary>
-    [Verify]
+    [AllowAnonymous]
+
     [Route("business/PhaInPlan")]
     public class PhaInPlanController : BaseController
     {
@@ -174,9 +175,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        /// 
         [HttpGet("TongBu")]
-
         public async Task<IActionResult> TongBu()
         {
             try
@@ -190,18 +189,16 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     var n = _PhaInPlanService.GetInfo(item.PlanNo);
                     if (n != null)
                     {
-                        var modal = n.Adapt<PhaInPlan>().ToUpdate(HttpContext);
+                        var modal = item.Adapt<PhaInPlan>().ToUpdate(HttpContext);
                         var response = _PhaInPlanService.UpdatePhaInPlan(modal);
-
                     }
                     else if (n == null)
                     {
-                        var modal = n.Adapt<PhaInPlan>().ToCreate(HttpContext);
+                        var modal = item.Adapt<PhaInPlan>().ToCreate(HttpContext);
                         var response = _PhaInPlanService.AddPhaInPlan(modal);
                     }
 
                 }
-
                 return SUCCESS("true");
             }
             catch (Exception ex)
@@ -213,13 +210,17 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         {
             using (var client = new HttpClient())
             {
-                //?pageSize=10&pageNum=1&pageFlag=true
-                //http://192.168.2.21:9403/His/GetPhaInPlanList?beginTime=2024-01-01&endTime=2024-01-31
 
-                string url = "http://192.168.2.21:9403/His/GetPhaInPlanList";
-                var json = JsonConvert.SerializeObject(requests);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync(url, content);
+                //string url = "http://192.168.2.21:9403/His/GetPhaInPlanList";
+                //var json = JsonConvert.SerializeObject(requests);
+                //var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string url = $"http://192.168.2.21:9403/His/GetPhaInPlanList?beginTime={requests.beginTime:yyyy-MM-dd}&endTime={requests.endTime:yyyy-MM-dd}";
+
+                // 发送 GET 请求
+                HttpResponseMessage response = await client.GetAsync(url);
+
+                //HttpResponseMessage response = await client.PostAsync(url, content);
                 // 获取响应内容
                 var responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
@@ -231,7 +232,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                 else
                 {
                     // 处理错误
-                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
                 }
             }
         }

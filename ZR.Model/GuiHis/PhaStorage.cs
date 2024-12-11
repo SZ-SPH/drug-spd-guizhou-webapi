@@ -11,7 +11,7 @@ namespace ZR.Model.GuiHis
     //http://192.168.2.21:9403/His/GetPhaStorage?drugDeptCode=6052
     public class PhaStorageInQuery
     {
-        public string DrugDeptCode { get; set; }
+        public int DrugDeptCode { get; set; }
         public string DrugCode { get; set; }
         public string TradeName { get; set; }
         public string ProducerName { get; set; }
@@ -48,8 +48,11 @@ namespace ZR.Model.GuiHis
 
     public class reqPhaStorage
     {
-        public int Total { get; set; }
-        public List<PhaStorage> Data { get; set; }
+        public int total { get; set; }
+        public List<PhaStorage> data { get; set; }
+        public string code { get; set; }
+        public string msg { get; set; }
+
     }
 }
 

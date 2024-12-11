@@ -8,6 +8,7 @@ using ZR.Service.Guiz.IGuizService;
 using Newtonsoft.Json;
 using System.Text;
 using ZR.Service.Guiz;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -15,7 +16,8 @@ namespace ZR.Admin.WebApi.Controllers.Gui
     /// <summary>
     /// 出库记录
     /// </summary>
-    [Verify]
+    [AllowAnonymous]
+
     [Route("business/PhaOut")]
     public class PhaOutController : BaseController
     {
@@ -179,6 +181,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
+        [HttpGet("TongBu")]
         public async Task<IActionResult> TongBu()
         {
             try
@@ -193,12 +196,12 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     var nu = _PhaOutService.GetInfo(item.OutBillCode);
                     if (nu != null)
                     {
-                        var modal = nu.Adapt<PhaOut>().ToUpdate(HttpContext);
+                        var modal = item.Adapt<PhaOut>().ToUpdate(HttpContext);
                         _PhaOutService.UpdatePhaOut(modal);
                     }
                     else if (nu == null)
                     {
-                        var modal = nu.Adapt<PhaOut>().ToCreate(HttpContext);
+                        var modal = item.Adapt<PhaOut>().ToCreate(HttpContext);
                         _PhaOutService.UpdatePhaOut(modal);
                     }
                 }
@@ -215,10 +218,16 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             using (var client = new HttpClient())
             {
                 //http://192.168.2.21:9403/His/GetPhaInPlanList
-                string url = "http://192.168.2.21:9403/His/GetPhaOutList";
-                var json = JsonConvert.SerializeObject(phaOutInQuery);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync(url, content);
+
+
+                string url = $"http://192.168.2.21:9403/His/GetPhaOutList?beginTime={phaOutInQuery.beginTime:yyyy-MM-dd}&endTime={phaOutInQuery.endTime:yyyy-MM-dd}";
+
+                // 发送 GET 请求
+                HttpResponseMessage response = await client.GetAsync(url);
+                //string url = "http://192.168.2.21:9403/His/GetPhaOutList";
+                //var json = JsonConvert.SerializeObject(phaOutInQuery);
+                //var content = new StringContent(json, Encoding.UTF8, "application/json");
+                //HttpResponseMessage response = await client.PostAsync(url, content);
                 // 获取响应内容
                 var responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
@@ -230,7 +239,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                 else
                 {
                     // 处理错误
-                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
                 }
             }
         }

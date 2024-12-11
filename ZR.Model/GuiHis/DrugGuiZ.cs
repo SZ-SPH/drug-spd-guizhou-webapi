@@ -9,18 +9,17 @@ using System.Threading.Tasks;
 namespace ZR.Model.GuiHis
 {
 
-    //http://192.168.1.95:7801/roc/order-service/api/v1/order/order-term/drug/query?pageSize=10&pageNum=1&pageFlag=true
 
     //药品
     public class GuiDrugInQuery
     {
         // 查询参数
-        public int? PageSize { get; set; } // 页大小
-        public int? PageNum { get; set; }  // 页码
-        public string OrderBy { get; set; } // 排序字段
-        public string OrderType { get; set; } // 排序类型
-        public string TermClassId { get; set; } // 术语类型编码
-        public string DrugTermId { get; set; } // 术语编码
+        public int? pageSize { get; set; } // 页大小
+        public int? pageNum { get; set; }  // 页码
+        public string orderBy { get; set; } // 排序字段
+        public string orderType { get; set; } // 排序类型
+        public string termClassId { get; set; } // 术语类型编码
+        public string drugTermId { get; set; } // 术语编码
         public bool pageFlag { get; set; } // pageFlag为true表示分页，为false的情况下就需要传其他过滤条件
 
     }
@@ -74,6 +73,8 @@ namespace ZR.Model.GuiHis
         public string DoseModelName { get; set; } // dosage form name
         public string DoseUnit { get; set; } // dosage unit
         public string DrugQuality { get; set; } // drug quality
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+
         public string DrugTermId { get; set; } // drug terminology code
         public string EnglishFormal { get; set; } // formal English name
         public string EnglishName { get; set; } // English product name

@@ -12,11 +12,11 @@ namespace ZR.Model.GuiHis
     {
         public string facCode { get; set; } 
         public string companyType { get; set; } 
-        public string validFlag { get; set; } 
+        public string validFlag { get; set; }
 
-//facCode 否   VARCHAR2(10)    供货商或生产厂家编码，不传时，返回全部
-//companyType 否 VARCHAR2(1) 公司类别：0－生产厂家，1－供销商
-//validFlag   否 VARCHAR2(1) 有效性 0 无效 1 有效
+        //facCode 否   VARCHAR2(10)    供货商或生产厂家编码，不传时，返回全部
+        //companyType 否 VARCHAR2(1) 公司类别：0－生产厂家，1－供销商operDate
+        //validFlag   否 VARCHAR2(1) 有效性 0 无效 1 有效
 
     }
 
@@ -31,6 +31,7 @@ namespace ZR.Model.GuiHis
 
     public class CompanyInfo
     {
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
         public string FacCode { get; set; } // 公司编码
         public string FacName { get; set; } // 公司名称
         public string Address { get; set; } // 公司地址
@@ -46,7 +47,7 @@ namespace ZR.Model.GuiHis
         public string ActualRate { get; set; } // 政策扣率
         public string Remark { get; set; } // 备注
         public string OperCode { get; set; } // 操作员编码
-        public DateTime OperDate { get; set; } // 操作日期
+        public DateTime? OperDate { get; set; } // 操作日期
         public string ValidFlag { get; set; } // 有效性 0 无效 1 有效
     }
 }

@@ -15,7 +15,8 @@ namespace ZR.Admin.WebApi.Controllers.Gui
     /// <summary>
     /// 厂家和供应商
     /// </summary>
-    [Verify]
+    //[Verify]
+    [AllowAnonymous]
     [Route("guiz/CompanyInfo")]
     public class CompanyInfoController : BaseController
     {
@@ -190,12 +191,12 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     var nu = _CompanyInfoService.GetInfo(item.FacCode);
                     if (nu != null)
                     {
-                        var modal = nu.Adapt<CompanyInfo>().ToUpdate(HttpContext);
+                        var modal = item.Adapt<CompanyInfo>().ToUpdate(HttpContext);
                         _CompanyInfoService.UpdateCompanyInfo(modal);
                     }
                     else if (nu == null)
                     {
-                        var modal = nu.Adapt<CompanyInfo>().ToCreate(HttpContext);
+                        var modal = item.Adapt<CompanyInfo>().ToCreate(HttpContext);
                         _CompanyInfoService.AddCompanyInfo(modal);
                     }
                 }

@@ -28,10 +28,12 @@ namespace ZR.Model.GuiHis
         [SugarColumn(ColumnName = "drugDeptCode")]
         public string DrugDeptCode { get; set; }
 
+
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+
         /// <summary>
         /// 出库单流水号
         /// </summary>
-        [SugarColumn(ColumnName = "outBillCode")]
         public long OutBillCode { get; set; }
 
         /// <summary>

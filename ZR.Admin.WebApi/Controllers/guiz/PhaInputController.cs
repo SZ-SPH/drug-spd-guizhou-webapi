@@ -12,7 +12,8 @@ namespace ZR.Admin.WebApi.Controllers.Gui
     /// <summary>
     /// 入库详情
     /// </summary>
-    [Verify]
+    [AllowAnonymous]
+
     [Route("business/PhaInput")]
     public class PhaInputController : BaseController
     {

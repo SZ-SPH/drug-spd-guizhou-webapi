@@ -17,7 +17,8 @@ namespace ZR.Admin.WebApi.Controllers.Gui
     /// <summary>
     /// 药品
     /// </summary>
-    [Verify]
+    [AllowAnonymous]
+
     [Route("business/GuiDrug")]
     public class GuiDrugController : BaseController
     {
@@ -34,8 +35,6 @@ namespace ZR.Admin.WebApi.Controllers.Gui
 
         public object GetModel(GuiDrugInQuery guiDrugIn)
         {
-
-
             return 's';
 
         }
@@ -187,72 +186,82 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// <summary>
         /// 同步
         /// </summary>
-        /// <param name="parmlist"></param>
+        /// <param name=""></param>
         /// <returns></returns>
         [HttpGet("TongBu")]
         public async Task<IActionResult> TongBu()
         {
+           ApiResponse mm =new ApiResponse();
+            ApiResponse ff = new ApiResponse();
+
             try
             {
-                GuiDrugInQuery guiDrugInQuery = new GuiDrugInQuery();
-                guiDrugInQuery.pageFlag = true;
-                guiDrugInQuery.PageSize = 10;
-                guiDrugInQuery.PageNum = 1;
-                var x = await SendRequestsAsync(guiDrugInQuery);
-                if (x.Data.Total > 0)
+                GuiDrugInQuery guiDrugInQuery = new GuiDrugInQuery
                 {
-                    guiDrugInQuery.PageSize = (int?)x.Data.Total;
+                    pageFlag = true,
+                    pageSize = 10,
+                    pageNum = 1
+                };
+                var x = await SendRequestsAsync(guiDrugInQuery);
+                ff = x;
+                if (x?.Data?.Total > 0) // 检查 x 和 x.Data 是否为 null
+                {
+                    guiDrugInQuery.pageSize = (int)x.Data.Total; // 确保 Total 是有效的
                     var y = await SendRequestsAsync(guiDrugInQuery);
-                    foreach (var item in y.Data.List)
+                    mm = y;
+                    if (y?.Data?.List != null) // 检查 y 和 y.Data.List 是否为 null
                     {
-                        var nu = _GuiDrugService.GetInfo(item.DrugTermId);
-                        if (nu != null)
+                        foreach (var item in y.Data.List)
                         {
-                            //进行修改
-                            var modal = nu.Adapt<GuiDrug>().ToUpdate(HttpContext);
-                            var response = _GuiDrugService.UpdateGuiDrug(modal);
-                        }
-                        else if (nu == null)
-                        {
-                            //进行新增
-                            var modal = nu.Adapt<GuiDrug>().ToCreate(HttpContext);
-                            var response = _GuiDrugService.AddGuiDrug(modal);
+                            var nu = _GuiDrugService.GetInfo(item.DrugTermId);
+                            if (nu != null)
+                            {
+                                // 进行修改
+                                var modal = item.Adapt<GuiDrug>().ToUpdate(HttpContext);
+                                var response = _GuiDrugService.UpdateGuiDrug(modal);
+                            }
+                            else if (nu==null)
+                            {
+                                var modal = item.Adapt<GuiDrug>().ToCreate(HttpContext);
+                                var response = _GuiDrugService.AddGuiDrug(modal);
+                            }
                         }
                     }
                 }
-
                 return SUCCESS("true");
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                // 记录异常信息
+                // 你可以使用日志工具记录异常
+                return StatusCode(500, ex.Message); // 返回500错误和异常消息
             }
         }
+
         private async Task<ApiResponse> SendRequestsAsync(GuiDrugInQuery requests)
         {
-                using (var client = new HttpClient())
-                {
-                //?pageSize=10&pageNum=1&pageFlag=true
+            using (var client = new HttpClient())
+            {
 
-                string url = "http://192.168.1.95:7801/roc/order-service/api/v1/order/order-term/drug/query";
-                    var json = JsonConvert.SerializeObject(requests);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync(url, content);
-                    // 获取响应内容
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // 解析 JSON 响应
-                        var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
-                       return apiResponse; // 返回 ApiResponse 对象
+                string url = $"http://192.168.1.95:7801/roc/order-service/api/v1/order/order-term/drug/query?pageFlag={requests.pageFlag}&pageNum-{requests.pageNum}&pageSize={requests.pageSize}";
+                //var json = JsonConvert.SerializeObject(requests);
+                //var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.GetAsync(url);
+                // 获取响应内容
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // 解析 JSON 响应
+                    var apiResponse = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
+                    return apiResponse; // 返回 ApiResponse 对象
                 }
-                    else
-                    {
-                        // 处理错误
-                        throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
-                    }
+                else
+                {
+                    // 处理错误
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
                 }
             }
+        }
 
     }
 }

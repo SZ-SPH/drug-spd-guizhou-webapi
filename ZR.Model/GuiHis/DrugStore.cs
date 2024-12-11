@@ -17,6 +17,8 @@ namespace ZR.Model.GuiHis
     [SugarTable("DrugStore")]
     public class DrugStore
     {
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+
         public string DrugDeptCode { get; set; } // 药房代码
         public string DrugDeptName { get; set; } // 药房名称
         public int StoreSum { get; set; } // 库存总量

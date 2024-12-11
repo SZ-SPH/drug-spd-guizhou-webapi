@@ -10,6 +10,8 @@ namespace ZR.Model.GuiHis
     [SugarTable("Departments")]
     public class Departments
     {
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+
         public string DeptCode { get; set; }       // 科室编码
         public string DeptEname { get; set; }      // 科室英文
         public string DeptName { get; set; }       // 科室名称

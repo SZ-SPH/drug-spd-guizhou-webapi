@@ -8,6 +8,8 @@ using ZR.Service.Guiz.IGuizService;
 using Newtonsoft.Json;
 using System.Text;
 using ZR.Service.Guiz;
+using MySqlConnector;
+using System.Net.Http;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -15,7 +17,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
     /// <summary>
     /// 库存
     /// </summary>
-    [Verify]
+    [AllowAnonymous]
     [Route("business/PhaStorage")]
     public class PhaStorageController : BaseController
     {
@@ -25,11 +27,13 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         private readonly IPhaStorageService _PhaStorageService;
         private readonly IDrugStoreService _DrugStoreService;
 
+        private readonly ILogger<PhaStorageController> _logger;
 
-        public PhaStorageController(IPhaStorageService PhaStorageService, IDrugStoreService drugStoreService)
+        public PhaStorageController(ILogger<PhaStorageController> logger, IPhaStorageService PhaStorageService, IDrugStoreService drugStoreService)
         {
             _PhaStorageService = PhaStorageService;
             _DrugStoreService = drugStoreService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -174,68 +178,105 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             return ExportExcel(result.Item2, result.Item1);
         }
 
-        /// <summary>
-        //http://192.168.2.21:9403/His/GetPhaStorage?drugDeptCode=6052
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        [HttpGet("TongBu")]
+        [HttpPost("TongBu")]
         public async Task<IActionResult> TongBu()
         {
             try
             {
-                var dep= _DrugStoreService.GetAll();
+                var dep = _DrugStoreService.GetAll();
                 foreach (var item in dep)
                 {
-                    PhaStorageInQuery phaStorageInQuery = new PhaStorageInQuery();
-                    phaStorageInQuery.DrugDeptCode = item.DrugDeptCode;
-                    reqPhaStorage x = await SendRequestsAsync(phaStorageInQuery);
-                    foreach (var items in x.Data)
+                    int drugDeptCode;
+                    if (!int.TryParse(item.DrugDeptCode?.Trim(), out drugDeptCode))
                     {
-                        var nu = _PhaStorageService.GetisInfo(items.DrugCode,item.DrugDeptCode);
-                            if (nu != null)
-                            {
-                                var modal = nu.Adapt<PhaStorage>().ToUpdate(HttpContext);
-                                _PhaStorageService.UpdatePhaStorage(modal);
-                            }
-                            else if (nu == null)
-                            {
-                                var modal = nu.Adapt<PhaStorage>().ToCreate(HttpContext);
-                                 _PhaStorageService.AddPhaStorage(modal);
-                            }
+                        continue; // 或者根据需要处理
                     }
-
+                    reqPhaStorage x = await SendRequestsAsync(drugDeptCode);
+                    if (x == null || x.data == null)
+                    {
+                        continue; // 或者处理无数据返回的逻辑
+                    }
+                    foreach (var items in x.data)
+                    {
+                        //var nu = _PhaStorageService.GetisInfo(items.DrugCode, item.DrugDeptCode);
+                        //if (nu != null)
+                        //{
+                        //    var modal = items.Adapt<PhaStorage>().ToUpdate(HttpContext);
+                        //    _PhaStorageService.UpdatePhaStorage(modal);
+                        //}
+                        //else if (nu == null)
+                        //{
+                            if (items != null)
+                            {
+                             var modal = items.Adapt<PhaStorage>().ToCreate(HttpContext);
+                             _PhaStorageService.AddPhaStorage(modal);
+                            }
+                        //}
+                    }
                 }
                 return SUCCESS("true");
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                _logger.LogError(ex, "An error occurred in TongBu method.");
+                return StatusCode(500, ex);
             }
         }
-        private async Task<reqPhaStorage> SendRequestsAsync(PhaStorageInQuery PhaStorageInQuery)
+
+        private async Task<reqPhaStorage> SendRequestsAsync(int PhaStorageInQuery)
         {
             using (var client = new HttpClient())
             {
-                string url = "http://192.168.2.21:9403/His/GetPhaStorage";
-                var json = JsonConvert.SerializeObject(PhaStorageInQuery);
+                // 构建 URL，包括查询参数
+                string url = $"http://192.168.2.21:9403/His/GetPhaStorage?drugDeptCode={PhaStorageInQuery}";
+                // 将对象序列化为 JSON
+                var json = JsonConvert.SerializeObject(null);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
+                // 发送 POST 请求
                 HttpResponseMessage response = await client.PostAsync(url, content);
-                // 获取响应内容
                 var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(responseContent); // 输出响应内容
                 if (response.IsSuccessStatusCode)
                 {
-                    // 解析 JSON 响应
-                    var apiResponse = JsonConvert.DeserializeObject<reqPhaStorage>(responseContent);
-                    return apiResponse; // 返回 ApiResponse 对象
+                    return JsonConvert.DeserializeObject<reqPhaStorage>(responseContent);
                 }
                 else
                 {
-                    // 处理错误
-                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent},Json:{json}");
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
                 }
             }
         }
+        [HttpPost("iiim")]
+        public async Task<reqPhaStorage> iiim(PhaStorageInQuery PhaStorageInQuery)
+        {
+            using (var client = new HttpClient())
+            {
+                // 构建 URL，包括查询参数
+                string url = $"http://192.168.2.21:9403/His/GetPhaStorage?drugDeptCode=6052";
+
+                // 将对象序列化为 JSON
+                var json = JsonConvert.SerializeObject(null);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                // 发送 POST 请求
+                HttpResponseMessage response = await client.PostAsync(url, content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    if (string.IsNullOrEmpty(responseContent))
+                    {
+                        Console.WriteLine("响应内容为空");
+                        return null;
+                    }
+                    return JsonConvert.DeserializeObject<reqPhaStorage>(responseContent);
+                }
+                else
+                {
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
+                }
+            }
+        }
+
+
+
     }
 }

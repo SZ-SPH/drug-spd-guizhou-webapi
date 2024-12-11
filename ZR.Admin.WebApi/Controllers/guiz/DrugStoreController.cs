@@ -15,7 +15,8 @@ namespace ZR.Admin.WebApi.Controllers.Gui
     /// <summary>
     /// 药房
     /// </summary>
-    [Verify]
+    [AllowAnonymous]
+
     [Route("business/DrugStore")]
     public class DrugStoreController : BaseController
     {

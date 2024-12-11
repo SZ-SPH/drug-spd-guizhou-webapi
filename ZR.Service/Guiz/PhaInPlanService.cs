@@ -139,20 +139,21 @@ namespace ZR.Service.Guiz
         {
             var predicate = Expressionable.Create<PhaInPlan>();
 
+            predicate = predicate.AndIF(parm.PlanNo>0, it => it.PlanNo == parm.PlanNo);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.BillCode), it => it.BillCode == parm.BillCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.State), it => it.State == parm.State);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.PlanType), it => it.PlanType == parm.PlanType);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode == parm.DrugDeptCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), it => it.TradeName == parm.TradeName);
-            predicate = predicate.AndIF(parm.BeginPlanDate == null, it => it.PlanDate >= DateTime.Now.ToShortDateString().ParseToDateTime());
+            //predicate = predicate.AndIF(parm.BeginPlanDate == null, it => it.PlanDate >= DateTime.Now.ToShortDateString().ParseToDateTime());
             predicate = predicate.AndIF(parm.BeginPlanDate != null, it => it.PlanDate >= parm.BeginPlanDate);
             predicate = predicate.AndIF(parm.EndPlanDate != null, it => it.PlanDate <= parm.EndPlanDate);
-            predicate = predicate.AndIF(parm.BeginStockDate == null, it => it.StockDate >= DateTime.Now.ToShortDateString().ParseToDateTime());
+            //predicate = predicate.AndIF(parm.BeginStockDate == null, it => it.StockDate >= DateTime.Now.ToShortDateString().ParseToDateTime());
             predicate = predicate.AndIF(parm.BeginStockDate != null, it => it.StockDate >= parm.BeginStockDate);
             predicate = predicate.AndIF(parm.EndStockDate != null, it => it.StockDate <= parm.EndStockDate);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.StockNo), it => it.StockNo == parm.StockNo);
-            predicate = predicate.AndIF(parm.BeginOperDate == null, it => it.OperDate >= DateTime.Now.ToShortDateString().ParseToDateTime());
+            //predicate = predicate.AndIF(parm.BeginOperDate == null, it => it.OperDate >= DateTime.Now.ToShortDateString().ParseToDateTime());
             predicate = predicate.AndIF(parm.BeginOperDate != null, it => it.OperDate >= parm.BeginOperDate);
             predicate = predicate.AndIF(parm.EndOperDate != null, it => it.OperDate <= parm.EndOperDate);
             return predicate;

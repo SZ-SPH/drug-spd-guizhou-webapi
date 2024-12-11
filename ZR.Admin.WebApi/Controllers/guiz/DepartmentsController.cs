@@ -15,7 +15,8 @@ namespace ZR.Admin.WebApi.Controllers.Gui
     /// <summary>
     /// 科室
     /// </summary>
-    [Verify]
+    [AllowAnonymous]
+
     [Route("business/Departments")]
     public class DepartmentsController : BaseController
     {
