@@ -4,47 +4,29 @@ using ZR.Model.Business;
 using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
-using ZR.Service.Business;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Aliyun.OSS;
-using SqlSugar;
 
-//创建时间：2024-09-26
+//创建时间：2024-12-11
 namespace ZR.Admin.WebApi.Controllers.Business
 {
     /// <summary>
-    /// 出库
+    /// 出库药品详情
     /// </summary>
     [Verify]
     [Route("business/OuWarehouset")]
     public class OuWarehousetController : BaseController
     {
         /// <summary>
-        /// 出库接口
+        /// 出库药品详情接口
         /// </summary>
         private readonly IOuWarehousetService _OuWarehousetService;
-        private readonly IApplicationPlanService _ApplicationPlanService;
-        private readonly IStockService _StockService;
 
-        private readonly IOutOrderService _OutOrderService;
-        private readonly IDrugService _DrugService;
-        private readonly IInWarehousingService _InWarehousingService;
-
-
-        public OuWarehousetController(IOuWarehousetService OuWarehousetService, IApplicationPlanService ApplicationPlanService
-            , IStockService stockService, IInWarehousingService InWarehousingService, IOutOrderService outOrderService, IDrugService DrugService)
+        public OuWarehousetController(IOuWarehousetService OuWarehousetService)
         {
             _OuWarehousetService = OuWarehousetService;
-            _ApplicationPlanService = ApplicationPlanService;
-            _StockService = stockService;
-            _OutOrderService = outOrderService;
-            _DrugService = DrugService;
-            _InWarehousingService = InWarehousingService;
-
         }
 
         /// <summary>
-        /// 查询出库列表
+        /// 查询出库药品详情列表
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
@@ -58,7 +40,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
 
         /// <summary>
-        /// 查询出库详情
+        /// 查询出库药品详情详情
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
@@ -73,12 +55,12 @@ namespace ZR.Admin.WebApi.Controllers.Business
         }
 
         /// <summary>
-        /// 添加出库
+        /// 添加出库药品详情
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [ActionPermissionFilter(Permission = "ouwarehouset:add")]
-        [Log(Title = "出库", BusinessType = BusinessType.INSERT)]
+        [Log(Title = "出库药品详情", BusinessType = BusinessType.INSERT)]
         public IActionResult AddOuWarehouset([FromBody] OuWarehousetDto parm)
         {
             var modal = parm.Adapt<OuWarehouset>().ToCreate(HttpContext);
@@ -89,12 +71,12 @@ namespace ZR.Admin.WebApi.Controllers.Business
         }
 
         /// <summary>
-        /// 更新出库
+        /// 更新出库药品详情
         /// </summary>
         /// <returns></returns>
         [HttpPut]
         [ActionPermissionFilter(Permission = "ouwarehouset:edit")]
-        [Log(Title = "出库", BusinessType = BusinessType.UPDATE)]
+        [Log(Title = "出库药品详情", BusinessType = BusinessType.UPDATE)]
         public IActionResult UpdateOuWarehouset([FromBody] OuWarehousetDto parm)
         {
             var modal = parm.Adapt<OuWarehouset>().ToUpdate(HttpContext);
@@ -104,24 +86,24 @@ namespace ZR.Admin.WebApi.Controllers.Business
         }
 
         /// <summary>
-        /// 删除出库
+        /// 删除出库药品详情
         /// </summary>
         /// <returns></returns>
         [HttpDelete("delete/{ids}")]
         [ActionPermissionFilter(Permission = "ouwarehouset:delete")]
-        [Log(Title = "出库", BusinessType = BusinessType.DELETE)]
+        [Log(Title = "出库药品详情", BusinessType = BusinessType.DELETE)]
         public IActionResult DeleteOuWarehouset([FromRoute]string ids)
         {
             var idArr = Tools.SplitAndConvert<int>(ids);
 
-            return ToResponse(_OuWarehousetService.Delete(idArr, "删除出库"));
+            return ToResponse(_OuWarehousetService.Delete(idArr));
         }
 
         /// <summary>
-        /// 导出出库
+        /// 导出出库药品详情
         /// </summary>
         /// <returns></returns>
-        [Log(Title = "出库", BusinessType = BusinessType.EXPORT, IsSaveResponseData = false)]
+        [Log(Title = "出库药品详情", BusinessType = BusinessType.EXPORT, IsSaveResponseData = false)]
         [HttpGet("export")]
         [ActionPermissionFilter(Permission = "ouwarehouset:export")]
         public IActionResult Export([FromQuery] OuWarehousetQueryDto parm)
@@ -133,15 +115,15 @@ namespace ZR.Admin.WebApi.Controllers.Business
             {
                 return ToResponse(ResultCode.FAIL, "没有要导出的数据");
             }
-            var result = ExportExcelMini(list, "出库", "出库");
+            var result = ExportExcelMini(list, "出库药品详情", "出库药品详情");
             return ExportExcel(result.Item2, result.Item1);
         }
 
         /// <summary>
-        /// 清空出库
+        /// 清空出库药品详情
         /// </summary>
         /// <returns></returns>
-        [Log(Title = "出库", BusinessType = BusinessType.CLEAN)]
+        [Log(Title = "出库药品详情", BusinessType = BusinessType.CLEAN)]
         [ActionPermissionFilter(Permission = "ouwarehouset:delete")]
         [HttpDelete("clean")]
         public IActionResult Clear()
@@ -159,7 +141,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// <param name="formFile"></param>
         /// <returns></returns>
         [HttpPost("importData")]
-        [Log(Title = "出库导入", BusinessType = BusinessType.IMPORT, IsSaveRequestData = false)]
+        [Log(Title = "出库药品详情导入", BusinessType = BusinessType.IMPORT, IsSaveRequestData = false)]
         [ActionPermissionFilter(Permission = "ouwarehouset:import")]
         public IActionResult ImportData([FromForm(Name = "file")] IFormFile formFile)
         {
@@ -173,78 +155,17 @@ namespace ZR.Admin.WebApi.Controllers.Business
         }
 
         /// <summary>
-        /// 出库导入模板下载
+        /// 出库药品详情导入模板下载
         /// </summary>
         /// <returns></returns>
         [HttpGet("importTemplate")]
-        [Log(Title = "出库模板", BusinessType = BusinessType.EXPORT, IsSaveResponseData = false)]
+        [Log(Title = "出库药品详情模板", BusinessType = BusinessType.EXPORT, IsSaveResponseData = false)]
         [AllowAnonymous]
         public IActionResult ImportTemplateExcel()
         {
             var result = DownloadImportTemplate(new List<OuWarehousetDto>() { }, "OuWarehouset");
             return ExportExcel(result.Item2, result.Item1);
         }
-
-
-
-
-        /// <summary>
-        ///  
-        /// </summary>
-        /// <param name="idlist"></param>
-        /// <returns></returns>
-        [HttpPost("stockAdd")]
-        [ActionPermissionFilter(Permission = "stock:list")]
-        public IActionResult ALLADDplanStock([FromBody] outSork pm)
-        {
-            var response = _ApplicationPlanService.AllGetInfo(pm.ids);
-
-            //创建出库单
-            var parm = new OutOrderDto();
-            parm.OutOrderCode = "";
-            parm.InpharmacyId = 0;
-            parm.OutWarehouseID =0;
-            parm.UseReceive = pm.username;
-            parm.Times = DateTime.Now;
-            parm.Remarks = "";
-            var om = parm.Adapt<OutOrder>().ToCreate(HttpContext);
-            var or = _OutOrderService.AddOutOrder(om);
-            //默认匹配药房
-
-  
-        
-            foreach (var item in response) { 
-            
-                OuWarehousetDto ouWarehouset = new OuWarehousetDto();
-                ouWarehouset.DrugId = item.DrugId;
-                var x= _StockService.SGetList((int)item.DrugId);
-                var DR = _DrugService.GetInfo((int)item.DrugId);
-                var info = DR.Adapt<DrugDto>();
-                ouWarehouset.OutWarehouseID =x.WarehouseID;
-                ouWarehouset.InpharmacyId = item.PharmacyId;
-                ouWarehouset.Qty = item.Qty;
-                ouWarehouset.PharmacyId = item.Id;
-                ouWarehouset.Times = DateTime.Now;
-                ouWarehouset.BatchNumber =x.BatchON;
-                ouWarehouset.Minunit=x.SUnit;
-                ouWarehouset.Buyprice = x.PurchasePrice;
-                ouWarehouset.Drugname = info.DrugName;
-                ouWarehouset.DrugSpecifications = info.DrugSpecifications;
-                ouWarehouset.ManufacturerName =info.ProduceName;
-                ouWarehouset.OutorderID = or.Id;
-
-
-                var modal = ouWarehouset.Adapt<OuWarehouset>().ToCreate(HttpContext);
-                var s = _OuWarehousetService.AddOuWarehouset(modal);
-            }
-            return SUCCESS(response);
-
-        }
-    }
-    public class outSork
-    {
-        public string username { get; set; }  
-        public List<int> ids { get; set; }
 
     }
 }

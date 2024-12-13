@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using System.Text;
 using ZR.Service.Guiz;
 using Org.BouncyCastle.Asn1.Ocsp;
+using ZR.Service.Business.IBusinessService;
+using ZR.Service.Business;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -25,10 +27,17 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// 出库记录接口
         /// </summary>
         private readonly IPhaOutService _PhaOutService;
+        private readonly IOutOrderService _OutOrderService;
+        private readonly IOuWarehousetService _OuWarehousetService;
 
-        public PhaOutController(IPhaOutService PhaOutService)
+
+        public PhaOutController(IPhaOutService PhaOutService,IOutOrderService outOrderService,IOuWarehousetService ouWarehousetService)
         {
             _PhaOutService = PhaOutService;
+                
+            _OutOrderService = outOrderService;
+
+            _OuWarehousetService= ouWarehousetService;
         }
 
         /// <summary>
@@ -58,6 +67,83 @@ namespace ZR.Admin.WebApi.Controllers.Gui
 
             var info = response.Adapt<PhaOutDto>();
             return SUCCESS(info);
+        }
+
+        /// <summary>
+        /// 增加到出库单
+        /// </summary>
+        /// <param name="phaOuts"></param>
+        /// <returns></returns>
+        [HttpPost("Addout")]
+        [ActionPermissionFilter(Permission = "outOrder:query")]
+        public IActionResult Addout([FromBody] List<PhaOut> phaOuts)
+        {
+            // 用于存储已经处理的出库单
+            var processedOrders = new Dictionary<string, OutOrder>();
+            foreach (var item in phaOuts)
+            {
+                // 创建唯一的出库单标识
+                string orderKey = $"{item.DrugDeptCode}-{item.DrugStorageCode}";
+                OutOrder currentOrder = new OutOrder();
+                // 检查是否已经存在相同的出库单
+                if (!processedOrders.ContainsKey(orderKey))
+                {
+                    // 如果不存在，创建新的出库单
+                    OutOrder outOrder = new OutOrder
+                    {
+                        OutOrderCode = GenerateUniqueOutOrderCode(), // 生成唯一的出库单代码
+                        OutWarehouseID = item.DrugDeptCode,
+                        OutBillCode = item.OutBillCode,
+                        InpharmacyId = item.DrugStorageCode,
+                        Times = DateTime.Now
+                    };
+                    currentOrder = _OutOrderService.AddOutOrder(outOrder);
+                    // 将出库单添加到已处理的字典中
+                    processedOrders[orderKey] = outOrder;
+                }
+                // 获取当前出库单
+                //currentOrder = processedOrders[orderKey];
+                // 将 PhaOut 数据添加到 OuWarehouset 表
+                var OuWarehouset = MapPhaOutToOuWarehouset(item, currentOrder.Id);
+                // 保存 OuWarehouset
+                _OuWarehousetService.AddOuWarehouset(OuWarehouset);
+            }
+            return SUCCESS("出库单处理成功");
+        }
+
+        // 生成唯一的出库单代码的示例方法
+        private string GenerateUniqueOutOrderCode()
+        {
+            string currentTime = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            // 生成一个随机四位数
+            Random random = new Random();
+            int randomFourDigit = random.Next(1000, 10000); // 生成范围在1000到9999之间的四位数
+            // 组合当前时间和随机四位数
+            return $"{currentTime}{randomFourDigit}";
+        }
+
+        private OuWarehouset MapPhaOutToOuWarehouset(PhaOut phaOut, int outOrderId)
+        {
+            var OuWarehouset = new OuWarehouset
+            {
+                OutorderID = outOrderId // 设置 OutOrderId
+            };
+
+            var phaOutProperties = typeof(PhaOut).GetProperties();
+            var OuWarehousetProperties = typeof(OuWarehouset).GetProperties();
+
+            foreach (var phaOutProp in phaOutProperties)
+            {
+                // 查找与 PhaOut 属性同名的 OuWarehouset 属性
+                var matchingProp = OuWarehousetProperties.FirstOrDefault(p => p.Name == phaOutProp.Name);
+                if (matchingProp != null && matchingProp.CanWrite)
+                {
+                    // 复制属性值
+                    matchingProp.SetValue(OuWarehouset, phaOutProp.GetValue(phaOut));
+                }
+            }
+            return OuWarehouset;
         }
 
         /// <summary>

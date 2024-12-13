@@ -5,7 +5,7 @@ using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
 
-//创建时间：2024-09-27
+//创建时间：2024-12-11
 namespace ZR.Admin.WebApi.Controllers.Business
 {
     /// <summary>
@@ -96,7 +96,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         {
             var idArr = Tools.SplitAndConvert<int>(ids);
 
-            return ToResponse(_OutOrderService.Delete(idArr, "删除出库单"));
+            return ToResponse(_OutOrderService.Delete(idArr));
         }
 
         /// <summary>

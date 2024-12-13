@@ -23,7 +23,6 @@ namespace ZR.Service.Business
             var predicate = QueryExp(parm);
 
             var response = Queryable()
-                //.OrderBy("Id asc")
                 .Where(predicate.ToExpression())
                 .ToPage<OutOrder, OutOrderDto>(parm);
 
@@ -62,7 +61,7 @@ namespace ZR.Service.Business
         /// <returns></returns>
         public int UpdateOutOrder(OutOrder model)
         {
-            return Update(model, true, "修改出库单");
+            return Update(model, true);
         }
 
         /// <summary>
@@ -136,13 +135,9 @@ namespace ZR.Service.Business
             var predicate = Expressionable.Create<OutOrder>();
 
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.OutOrderCode), it => it.OutOrderCode == parm.OutOrderCode);
-            predicate = predicate.AndIF(parm.InpharmacyId != null, it => it.InpharmacyId == parm.InpharmacyId);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.UseReceive), it => it.UseReceive == parm.UseReceive);
-            predicate = predicate.AndIF(parm.OutWarehouseID != null, it => it.OutWarehouseID == parm.OutWarehouseID);
-            predicate = predicate.AndIF(parm.BeginTimes == null, it => it.Times >= DateTime.Now.ToShortDateString().ParseToDateTime());
-            predicate = predicate.AndIF(parm.BeginTimes != null, it => it.Times >= parm.BeginTimes);
-            predicate = predicate.AndIF(parm.EndTimes != null, it => it.Times <= parm.EndTimes);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Remarks), it => it.Remarks == parm.Remarks);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.InpharmacyId), it => it.InpharmacyId == parm.InpharmacyId);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.OutWarehouseID), it => it.OutWarehouseID == parm.OutWarehouseID);
+            predicate = predicate.AndIF(parm.OutBillCode != null, it => it.OutBillCode == parm.OutBillCode);
             return predicate;
         }
     }

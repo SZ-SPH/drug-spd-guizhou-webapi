@@ -4,7 +4,7 @@ using ZR.Model.Business;
 namespace ZR.Service.Business.IBusinessService
 {
     /// <summary>
-    /// 出库service接口
+    /// 出库药品详情service接口
     /// </summary>
     public interface IOuWarehousetService : IBaseService<OuWarehouset>
     {

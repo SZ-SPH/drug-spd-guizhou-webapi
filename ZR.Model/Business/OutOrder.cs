@@ -21,7 +21,7 @@ namespace ZR.Model.Business
         /// <summary>
         /// 领取部门 
         /// </summary>
-        public int? InpharmacyId { get; set; }
+        public string InpharmacyId { get; set; }
 
         /// <summary>
         /// 领取人 
@@ -31,7 +31,7 @@ namespace ZR.Model.Business
         /// <summary>
         /// 发出出库 
         /// </summary>
-        public int? OutWarehouseID { get; set; }
+        public string OutWarehouseID { get; set; }
 
         /// <summary>
         /// 时间 
@@ -42,6 +42,21 @@ namespace ZR.Model.Business
         /// 备注 
         /// </summary>
         public string Remarks { get; set; }
+
+        /// <summary>
+        /// his出库单流水号
+        /// </summary>
+        public long? OutBillCode { get; set; }
+
+        /// <summary>
+        /// 创建时间 
+        /// </summary>
+        public DateTime? CreateTime { get; set; }
+
+        /// <summary>
+        /// 创建人 
+        /// </summary>
+        public string CreateBy { get; set; }
 
     }
 }

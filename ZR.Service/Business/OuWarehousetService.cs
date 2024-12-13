@@ -8,13 +8,13 @@ using ZR.Service.Business.IBusinessService;
 namespace ZR.Service.Business
 {
     /// <summary>
-    /// 出库Service业务层处理
+    /// 出库药品详情Service业务层处理
     /// </summary>
     [AppService(ServiceType = typeof(IOuWarehousetService), ServiceLifetime = LifeTime.Transient)]
     public class OuWarehousetService : BaseService<OuWarehouset>, IOuWarehousetService
     {
         /// <summary>
-        /// 查询出库列表
+        /// 查询出库药品详情列表
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
@@ -22,27 +22,8 @@ namespace ZR.Service.Business
         {
             var predicate = QueryExp(parm);
 
-            parm.Sort = "";
-
-            var response = Context.Queryable<OuWarehouset>()
-                .LeftJoin<Drug>((it, d) => it.DrugId == d.DrugId)
-                .LeftJoin<Warehouse>((it, d,w) => it.OutWarehouseID == w.Id)
-                .LeftJoin<Pharmacy>((it, d,w,p) => it.InpharmacyId == p.Id)
-                //.OrderBy("Id asc")
-                .OrderBy((it) => it.Id)
+            var response = Queryable()
                 .Where(predicate.ToExpression())
-                .Select((it, d, w, p) => new OuWarehouset
-                {
-                    DrugId = it.DrugId,
-                    DrugName = d.DrugName,
-                    OutWarehouseID = it.OutWarehouseID,
-                    OutWarehouseName = w.Name,
-                    InpharmacyId = it.InpharmacyId,
-                    InpharmacyName  = p.PharmacyName,
-                    Qty = it.Qty,
-                    PharmacyId = it.PharmacyId,
-                    Times = it.Times
-                })
                 .ToPage<OuWarehouset, OuWarehousetDto>(parm);
 
             return response;
@@ -64,7 +45,7 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 添加出库
+        /// 添加出库药品详情
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -74,17 +55,17 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 修改出库
+        /// 修改出库药品详情
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         public int UpdateOuWarehouset(OuWarehouset model)
         {
-            return Update(model, true, "修改出库");
+            return Update(model, true);
         }
 
         /// <summary>
-        /// 清空出库
+        /// 清空出库药品详情
         /// </summary>
         /// <returns></returns>
         public bool TruncateOuWarehouset()
@@ -98,14 +79,13 @@ namespace ZR.Service.Business
             return Truncate();
         }
         /// <summary>
-        /// 导入出库
+        /// 导入出库药品详情
         /// </summary>
         /// <returns></returns>
         public (string, object, object) ImportOuWarehouset(List<OuWarehouset> list)
         {
             var x = Context.Storageable(list)
                 .SplitInsert(it => !it.Any())
-                .SplitError(x => x.Item.Id.IsEmpty(), "Id不能为空")
                 //.WhereColumns(it => it.UserName)//如果不是主键可以这样实现（多字段it=>new{it.x1,it.x2}）
                 .ToStorage();
             var result = x.AsInsertable.ExecuteCommand();//插入可插入部分;
@@ -127,7 +107,7 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 导出出库
+        /// 导出出库药品详情
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
@@ -154,16 +134,12 @@ namespace ZR.Service.Business
         {
             var predicate = Expressionable.Create<OuWarehouset>();
 
-            predicate = predicate.AndIF(parm.DrugId != null, it => it.DrugId == parm.DrugId);
-            predicate = predicate.AndIF(parm.OutWarehouseID != null, it => it.OutWarehouseID == parm.OutWarehouseID);
-            predicate = predicate.AndIF(parm.InpharmacyId != null, it => it.InpharmacyId == parm.InpharmacyId);
-            predicate = predicate.AndIF(parm.PharmacyId != null, it => it.PharmacyId == parm.PharmacyId);
-            predicate = predicate.AndIF(parm.PharmacyId != null, it => it.OutorderID == parm.OutorderID);
-
-            predicate = predicate.AndIF(parm.BeginTimes == null, it => it.Times >= DateTime.Now.ToShortDateString().ParseToDateTime());
-            
-            predicate = predicate.AndIF(parm.BeginTimes != null, it => it.Times >= parm.BeginTimes);
-            predicate = predicate.AndIF(parm.EndTimes != null, it => it.Times <= parm.EndTimes);
+            predicate = predicate.AndIF(parm.OutorderID != null, it => it.OutorderID == parm.OutorderID);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode == parm.DrugDeptCode);
+            predicate = predicate.AndIF(parm.OutBillCode != null, it => it.OutBillCode == parm.OutBillCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.GroupCode), it => it.GroupCode == parm.GroupCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), it => it.TradeName == parm.TradeName);
             return predicate;
         }
     }

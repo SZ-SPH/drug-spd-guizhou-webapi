@@ -7,12 +7,9 @@ namespace ZR.Model.Business.Dto
     public class OutOrderQueryDto : PagerInfo 
     {
         public string OutOrderCode { get; set; }
-        public int? InpharmacyId { get; set; }
-        public string UseReceive { get; set; }
-        public int? OutWarehouseID { get; set; }
-        public DateTime? BeginTimes { get; set; }
-        public DateTime? EndTimes { get; set; }
-        public string Remarks { get; set; }
+        public string InpharmacyId { get; set; }
+        public string OutWarehouseID { get; set; }
+        public long? OutBillCode { get; set; }
     }
 
     /// <summary>
@@ -31,7 +28,7 @@ namespace ZR.Model.Business.Dto
 
         [ExcelColumn(Name = "领取部门")]
         [ExcelColumnName("领取部门")]
-        public int? InpharmacyId { get; set; }
+        public string InpharmacyId { get; set; }
 
         [ExcelColumn(Name = "领取人")]
         [ExcelColumnName("领取人")]
@@ -39,7 +36,7 @@ namespace ZR.Model.Business.Dto
 
         [ExcelColumn(Name = "发出出库")]
         [ExcelColumnName("发出出库")]
-        public int? OutWarehouseID { get; set; }
+        public string OutWarehouseID { get; set; }
 
         [ExcelColumn(Name = "时间", Format = "yyyy-MM-dd HH:mm:ss", Width = 20)]
         [ExcelColumnName("时间")]
@@ -48,6 +45,19 @@ namespace ZR.Model.Business.Dto
         [ExcelColumn(Name = "备注")]
         [ExcelColumnName("备注")]
         public string Remarks { get; set; }
+
+        [ExcelColumn(Name = "his出库单流水号")]
+        [ExcelColumnName("his出库单流水号")]
+        public long? OutBillCode { get; set; }
+
+        [ExcelColumn(Name = "创建时间", Format = "yyyy-MM-dd HH:mm:ss", Width = 20)]
+        [ExcelColumnName("创建时间")]
+        public DateTime? CreateTime { get; set; }
+
+
+        [ExcelColumn(Name = "创建人")]
+        [ExcelColumnName("创建人")]
+        public string CreateBy { get; set; }
 
 
 

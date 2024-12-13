@@ -26,14 +26,16 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// </summary>
         private readonly IPhaStorageService _PhaStorageService;
         private readonly IDrugStoreService _DrugStoreService;
+        private readonly IDepartmentsService _DepartmentsService;
 
         private readonly ILogger<PhaStorageController> _logger;
 
-        public PhaStorageController(ILogger<PhaStorageController> logger, IPhaStorageService PhaStorageService, IDrugStoreService drugStoreService)
+        public PhaStorageController(ILogger<PhaStorageController> logger, IPhaStorageService PhaStorageService, IDrugStoreService drugStoreService, IDepartmentsService departmentsService)
         {
             _PhaStorageService = PhaStorageService;
             _DrugStoreService = drugStoreService;
             _logger = logger;
+            _DepartmentsService = departmentsService;
         }
 
         /// <summary>
@@ -211,6 +213,38 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                              var modal = items.Adapt<PhaStorage>().ToCreate(HttpContext);
                              _PhaStorageService.AddPhaStorage(modal);
                             }
+                        //}
+                    }
+                }
+
+                var departments = _DepartmentsService.GetAll();
+                foreach (var item in dep)
+                {
+                    int drugDeptCode;
+                    if (!int.TryParse(item.DrugDeptCode?.Trim(), out drugDeptCode))
+                    {
+                        continue; // 或者根据需要处理
+                    }
+                    reqPhaStorage x = await SendRequestsAsync(drugDeptCode);
+                    if (x == null || x.data == null)
+                    {
+                        continue; // 或者处理无数据返回的逻辑
+                    }
+                    foreach (var items in x.data)
+                    {
+                        //var nu = _PhaStorageService.GetisInfo(items.DrugCode, item.DrugDeptCode);
+                        //if (nu != null)
+                        //{
+                        //    var modal = items.Adapt<PhaStorage>().ToUpdate(HttpContext);
+                        //    _PhaStorageService.UpdatePhaStorage(modal);
+                        //}
+                        //else if (nu == null)
+                        //{
+                        if (items != null)
+                        {
+                            var modal = items.Adapt<PhaStorage>().ToCreate(HttpContext);
+                            _PhaStorageService.AddPhaStorage(modal);
+                        }
                         //}
                     }
                 }

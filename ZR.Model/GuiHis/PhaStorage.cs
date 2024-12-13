@@ -22,7 +22,10 @@ namespace ZR.Model.GuiHis
 
     public class PhaStorage
     {
+        //[SugarColumn(IsPrimaryKey = true)]
         public string DrugDeptCode { get; set; }
+        //[SugarColumn(IsPrimaryKey = true)]
+
         public string DrugCode { get; set; }
         public string TradeName { get; set; }
         public string Specs { get; set; }
