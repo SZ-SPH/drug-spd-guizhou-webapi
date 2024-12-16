@@ -129,7 +129,7 @@ namespace ZR.Service.Business
                         ExamDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         ApproveOperCode = "",
                         ApproveDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                        OperCode = "",
+                        OperCode = ti.OperCode,
                         OperDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         Mark = ti.Mark,
                         PurcharsePriceFirsttime = decimal.Parse(ti.PurchasePrice),
@@ -140,6 +140,8 @@ namespace ZR.Service.Business
                         ApproveInfo = "",
                         SerialNum = id.SerialNum,
                         BatchId = id.BatchId,
+                        //发票日期
+                        InvoiceDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                     })
                     .Single();
                     InwarhouseHisDTO HisDTO = new InwarhouseHisDTO();
@@ -181,6 +183,7 @@ namespace ZR.Service.Business
                     HisDTO.productionDate = PlanNoCorrespondingItem.ProductionDate;
                     HisDTO.approveInfo = PlanNoCorrespondingItem.ApproveInfo;
                     HisDTO.operDate = PlanNoCorrespondingItem.OperDate;
+                    HisDTO.invoiceDate = PlanNoCorrespondingItem.InvoiceDate;
                     pushHisList.Add(HisDTO);
                 });
                 string postUrl = $"http://192.168.2.21:9403/His/PhaInput";
