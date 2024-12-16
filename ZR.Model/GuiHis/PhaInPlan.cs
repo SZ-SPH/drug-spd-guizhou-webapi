@@ -79,6 +79,7 @@ namespace ZR.Model.GuiHis
         public DateTime? OperDate { get; set; } // 操作日期
 
         public string ExtendField { get; set; } // 扩展字段
+        public string Status { get; set; } // 生成出库单 0未生成 1已生成
     }
 
 }
