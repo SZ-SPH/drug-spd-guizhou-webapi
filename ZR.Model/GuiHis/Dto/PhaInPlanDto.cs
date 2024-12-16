@@ -153,8 +153,10 @@ namespace ZR.Model.GuiHis.Dto
         public string ExtendField { get; set; }
 
 
-
         [ExcelColumn(Name = "单据状态 0 计划单，1 采购单")]
         public string StateLabel { get; set; }
+
+        [ExcelColumn(Name = "生成出库单 0 未生成 1已生成")]
+        public string Status { get; set; }
     }
 }
