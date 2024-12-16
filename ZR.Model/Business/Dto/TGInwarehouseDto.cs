@@ -29,7 +29,7 @@ namespace ZR.Model.Business.Dto
         public int PackQty { get; set; } // 包装数
         public string MinUnit { get; set; } // 最小单位
         public string BatchNo { get; set; } // 批号
-        public DateTime ValidDate { get; set; } // 有效期
+        public string ValidDate { get; set; } // 有效期
         public string ProducerCode { get; set; } // 生产厂家
         public string CompanyCode { get; set; } // 供货单位代码
         public decimal RetailPrice { get; set; } // 零售价
@@ -43,23 +43,23 @@ namespace ZR.Model.Business.Dto
         public string InState { get; set; } // 入库状态
         public int ApplyNum { get; set; } // 申请入库量
         public string ApplyOperCode { get; set; } // 申请入库操作员
-        public DateTime ApplyDate { get; set; } // 申请入库日期
+        public string ApplyDate { get; set; } // 申请入库日期
         public int ExamNum { get; set; } // 审批数量
         public string ExamOperCode { get; set; } // 审批人
-        public DateTime ExamDate { get; set; } // 审批日期
+        public string ExamDate { get; set; } // 审批日期
         public string ApproveOperCode { get; set; } // 核准人
-        public DateTime ApproveDate { get; set; } // 核准日期
+        public string ApproveDate { get; set; } // 核准日期
         public string PlaceCode { get; set; } // 货位码
         public string InvoiceNo { get; set; } // 发票号
         public string OperCode { get; set; } // 操作员
-        public DateTime OperDate { get; set; } // 操作日期
+        public string OperDate { get; set; } // 操作日期
         public string Mark { get; set; } // 备注
         public string ExtCode1 { get; set; } // 扩展字段1
         public string ExtCode2 { get; set; } // 扩展字段2
         public decimal PurcharsePriceFirsttime { get; set; } // 一般入库时的购入价
         public string IsTenderOffer { get; set; } // 招标标记
-        public DateTime InvoiceDate { get; set; } // 发票上的发票日期
-        public DateTime ProductionDate { get; set; } // 生产日期
+        public string InvoiceDate { get; set; } // 发票上的发票日期
+        public string ProductionDate { get; set; } // 生产日期
         public string ApproveInfo { get; set; } // 批文信息
         public string TracCode { get; set; } // 药品追溯码
         public string CaseCode { get; set; } // 箱码

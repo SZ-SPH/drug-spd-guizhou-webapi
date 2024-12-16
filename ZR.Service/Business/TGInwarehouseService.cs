@@ -106,7 +106,7 @@ namespace ZR.Service.Business
                         MinUnit = ti.MinUnit,
                         BatchNo = id.BatchNo,
                         //有效期暂待定
-                        ValidDate = DateTime.Now,
+                        ValidDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         ProducerCode = ti.ProducerCode,
                         //供货单位代码待定
                         CompanyCode = "",
@@ -123,19 +123,19 @@ namespace ZR.Service.Business
                         ApplyNum = int.Parse(ti.StockNum),
                         //待定
                         ApplyOperCode = "",
-                        ApplyDate = DateTime.Now,
+                        ApplyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         ExamNum = int.Parse(ti.StockNum),
                         ExamOperCode = "",
-                        ExamDate = DateTime.Now,
+                        ExamDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         ApproveOperCode = "",
-                        ApproveDate = DateTime.Now,
+                        ApproveDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         OperCode = "",
-                        OperDate = DateTime.Now,
+                        OperDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         Mark = ti.Mark,
                         PurcharsePriceFirsttime = decimal.Parse(ti.PurchasePrice),
                         IsTenderOffer = "0",
                         //待定
-                        ProductionDate = DateTime.Now,
+                        ProductionDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         //待定
                         ApproveInfo = "",
                         SerialNum = id.SerialNum,
