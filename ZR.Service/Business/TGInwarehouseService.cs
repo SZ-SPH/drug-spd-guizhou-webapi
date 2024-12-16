@@ -180,6 +180,7 @@ namespace ZR.Service.Business
                     HisDTO.isTenderOffer = PlanNoCorrespondingItem.IsTenderOffer;
                     HisDTO.productionDate = PlanNoCorrespondingItem.ProductionDate;
                     HisDTO.approveInfo = PlanNoCorrespondingItem.ApproveInfo;
+                    HisDTO.operDate = PlanNoCorrespondingItem.OperDate;
                     pushHisList.Add(HisDTO);
                 });
                 string postUrl = $"http://192.168.2.21:9403/His/PhaInput";
