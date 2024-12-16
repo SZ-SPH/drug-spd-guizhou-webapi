@@ -5,7 +5,7 @@ namespace ZR.Model.GuiHis.Dto
     /// </summary>
     public class GuiDrugQueryDto : PagerInfo
     {
-        public string DrugtermId { get; set; }
+        public string DrugTermId { get; set; }
         public string EnglishFormal { get; set; }
         public string RegularName { get; set; }
         public string RegularSpellCode { get; set; }
@@ -90,7 +90,7 @@ namespace ZR.Model.GuiHis.Dto
 
         [ExcelColumn(Name = "药品术语编码")]
         [ExcelColumnName("药品术语编码")]
-        public string DrugtermId { get; set; }
+        public string DrugTermId { get; set; }
 
         [ExcelColumn(Name = "英文名")]
         [ExcelColumnName("英文名")]

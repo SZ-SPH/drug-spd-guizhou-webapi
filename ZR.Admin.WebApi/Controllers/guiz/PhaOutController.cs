@@ -11,6 +11,7 @@ using ZR.Service.Guiz;
 using Org.BouncyCastle.Asn1.Ocsp;
 using ZR.Service.Business.IBusinessService;
 using ZR.Service.Business;
+using Aliyun.OSS;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -80,11 +81,13 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         {
             // 用于存储已经处理的出库单
             var processedOrders = new Dictionary<string, OutOrder>();
+            OutOrder currentOrder = new OutOrder();
+
             foreach (var item in phaOuts)
             {
                 // 创建唯一的出库单标识
                 string orderKey = $"{item.DrugDeptCode}-{item.DrugStorageCode}";
-                OutOrder currentOrder = new OutOrder();
+                //OutOrder currentOrder = new OutOrder();
                 // 检查是否已经存在相同的出库单
                 if (!processedOrders.ContainsKey(orderKey))
                 {
@@ -93,10 +96,11 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     {
                         OutOrderCode = GenerateUniqueOutOrderCode(), // 生成唯一的出库单代码
                         OutWarehouseID = item.DrugDeptCode,
-                        OutBillCode = item.OutBillCode,
+                        //OutBillCode = item.OutBillCode,
                         InpharmacyId = item.DrugStorageCode,
                         Times = DateTime.Now
                     };
+                    var modal = outOrder.Adapt<OutOrder>().ToCreate(HttpContext);
                     currentOrder = _OutOrderService.AddOutOrder(outOrder);
                     // 将出库单添加到已处理的字典中
                     processedOrders[orderKey] = outOrder;

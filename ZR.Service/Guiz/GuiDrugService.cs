@@ -135,7 +135,7 @@ namespace ZR.Service.Guiz
         {
             var predicate = Expressionable.Create<GuiDrug>();
 
-            //predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugtermId), it => it.DrugtermId.Contains(parm.DrugtermId));
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugTermId), it => it.DrugTermId.Contains(parm.DrugTermId));
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.EnglishFormal), it => it.EnglishFormal.Contains(parm.EnglishFormal));
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.RegularName), it => it.RegularName.Contains(parm.RegularName));
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.RegularSpellCode), it => it.RegularSpellCode.Contains(parm.RegularSpellCode));
