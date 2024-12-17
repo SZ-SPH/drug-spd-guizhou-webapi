@@ -295,7 +295,6 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                         _PhaOutService.UpdatePhaOut(modal);
                     }
                 }
-
                 return SUCCESS("true");
             }
             catch (Exception ex)

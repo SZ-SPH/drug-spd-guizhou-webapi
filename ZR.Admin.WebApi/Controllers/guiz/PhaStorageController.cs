@@ -183,6 +183,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         [HttpPost("TongBu")]
         public async Task<IActionResult> TongBu()
         {
+            //直接清空再添加
             try
             {
                 var dep = _DrugStoreService.GetAll();
@@ -199,29 +200,19 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                         continue; // 或者处理无数据返回的逻辑
                     }
                     foreach (var items in x.data)
-                    {
-                        //var nu = _PhaStorageService.GetisInfo(items.DrugCode, item.DrugDeptCode);
-                        //if (nu != null)
-                        //{
-                        //    var modal = items.Adapt<PhaStorage>().ToUpdate(HttpContext);
-                        //    _PhaStorageService.UpdatePhaStorage(modal);
-                        //}
-                        //else if (nu == null)
-                        //{
+                    {                
                             if (items != null)
                             {
                              var modal = items.Adapt<PhaStorage>().ToCreate(HttpContext);
                              _PhaStorageService.AddPhaStorage(modal);
                             }
-                        //}
                     }
                 }
-
                 var departments = _DepartmentsService.GetAll();
-                foreach (var item in dep)
+                foreach (var item in departments)
                 {
                     int drugDeptCode;
-                    if (!int.TryParse(item.DrugDeptCode?.Trim(), out drugDeptCode))
+                    if (!int.TryParse(item.DeptCode?.Trim(), out drugDeptCode))
                     {
                         continue; // 或者根据需要处理
                     }
@@ -232,14 +223,6 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     }
                     foreach (var items in x.data)
                     {
-                        //var nu = _PhaStorageService.GetisInfo(items.DrugCode, item.DrugDeptCode);
-                        //if (nu != null)
-                        //{
-                        //    var modal = items.Adapt<PhaStorage>().ToUpdate(HttpContext);
-                        //    _PhaStorageService.UpdatePhaStorage(modal);
-                        //}
-                        //else if (nu == null)
-                        //{
                         if (items != null)
                         {
                             var modal = items.Adapt<PhaStorage>().ToCreate(HttpContext);
