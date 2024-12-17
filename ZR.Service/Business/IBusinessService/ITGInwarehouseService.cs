@@ -10,7 +10,7 @@ namespace ZR.Service.Business.IBusinessService
     {
         PagedInfo<TGInwarehouseDto> GetList(TGInwarehouseQueryDto parm);
 
-        TGInwarehouse GetInfo(int Id);
+        TGInwarehouse GetInfo(string Id);
 
 
         TGInwarehouse AddTGInwarehouse(TGInwarehouse parm);

@@ -15,6 +15,7 @@ using System.Numerics;
 using System;
 using System.Text;
 using Org.BouncyCastle.Asn1.Ocsp;
+using ZR.Model.GuiHis;
 
 namespace ZR.Service.Business
 {
@@ -46,10 +47,10 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public TGInwarehouse GetInfo(int Id)
+        public TGInwarehouse GetInfo(string Id)
         {
             var response = Queryable()
-                .Where(x => x.Id == Id)
+                .Where(x => x.PlanNo == Id)
                 .First();
 
             return response;

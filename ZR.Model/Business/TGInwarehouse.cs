@@ -4,18 +4,19 @@ namespace ZR.Model.Business
     /// <summary>
     /// 采购计划入库
     /// </summary>
-    [SugarTable("t_plan_Inwarehouse")]
+    [SugarTable("PhaInPlan")]
     public class TGInwarehouse
     {
         /// <summary>
         /// 自增ID 
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int? Id { get; set; }
+        //[SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
+        //public int? Id { get; set; }
 
         /// <summary>
         /// 入库计划流水号 
         /// </summary>
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public string PlanNo { get; set; }
 
         /// <summary>

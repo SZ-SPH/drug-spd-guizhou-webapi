@@ -64,5 +64,26 @@ namespace ZR.Model.Business
         /// </summary>
         public string PushStatu { get; set; }
 
+
+        /// <summary>
+        /// 发票号码
+        /// </summary>
+        public string BillCode { get; set; }
+
+        /// <summary>
+        /// 发票时间
+        /// </summary>
+        public DateTime BillTime { get; set; }
+
+        /// <summary>
+        /// 供应商编码
+        /// </summary>
+        public string SupplierCode {get;set;}
+
+        /// <summary>
+        /// 供应商名称
+        /// </summary>
+        public string SupplierName { get; set; }
+
     }
 }
