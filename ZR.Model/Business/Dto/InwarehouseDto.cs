@@ -37,9 +37,13 @@ namespace ZR.Model.Business.Dto
     /// </summary>
     public class InwarehouseGenerateInwarehouseDto
     {
+        //采购计划单号
         public string BillCode { get; set; }
+        public string PurchaseNum { get; set; }
         public List<string> PlanNos { get; set; }
         public int StockNum { get; set; }
+        public DateTime BillTime { get; set; }
+        public string SupplierCode { get; set; }
     }
 
     /// <summary>

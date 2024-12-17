@@ -64,13 +64,40 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
 
         /// <summary>
+        /// 生成可选出库单
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost("generateSelectiveInwarehouse")]
+        [ActionPermissionFilter(Permission = "tginwarehouse:generateInwarehouse")]
+        public IActionResult GenerateSelectiveInwarehouse([FromBody]InwarehouseGenerateInwarehouseDto param)
+        {
+            var response = _InwarehouseService.generateSelectiveInwarehouse(param);
+            return SUCCESS(response ? "处理成功" : "处理失败");
+        }
+
+        /// <summary>
+        /// 追加入库单明细
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost("AppendSelectiveInwarehouse")]
+        [ActionPermissionFilter(Permission = "tginwarehouse:generateInwarehouse")]
+        public IActionResult AppendSelectiveInwarehouse([FromBody]InwarehouseGenerateInwarehouseDto param)
+        {
+            var response = _InwarehouseService.AppendSelectiveInwarehouse(param);
+            return SUCCESS(response ? "处理成功" : "处理失败");
+        }
+
+
+        /// <summary>
         /// 查询采购计划入库详情
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpGet("{Id}")]
         [ActionPermissionFilter(Permission = "tginwarehouse:query")]
-        public IActionResult GetTGInwarehouse(int Id)
+        public IActionResult GetTGInwarehouse(string Id)
         {
             var response = _TGInwarehouseService.GetInfo(Id);
             

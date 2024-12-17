@@ -66,6 +66,8 @@ namespace ZR.Model.Business.Dto
         public string Remark { get; set; }
         public string SerialNum { get; set; }
         public string BatchId { get; set; }
+        public string DrugType { get; set; }
+        public string DrugQuality { get; set; }
     }
 
     public class InwarhouseHisResponseDTO
