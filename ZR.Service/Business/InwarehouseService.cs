@@ -64,9 +64,21 @@ namespace ZR.Service.Business
         /// <returns></returns>
         public int DeleteInwarehouse(string idArr)
         {
-            int res = Context.Deleteable<Inwarehouse>().Where(it => idArr.Contains(it.Id.ToString())).ExecuteCommand();
-            Context.Deleteable<Inwarehousedetail>().Where(it => idArr.Contains(it.InwarehouseId.ToString())).ExecuteCommand();
-            return res;
+            try
+            {
+                Context.Ado.BeginTran();
+                Inwarehouse inwarehouseItem = Context.Queryable<Inwarehouse>().Where(it => idArr.Contains(it.Id.ToString())).Single();
+                Context.Updateable<PhaInPlan>().SetColumns(it => it.Status == "0").Where(it => inwarehouseItem.PlanNo.Contains(it.PlanNo.ToString())).ExecuteCommand();
+                Context.Deleteable<Inwarehousedetail>().Where(it => idArr.Contains(it.InwarehouseId.ToString())).ExecuteCommand();
+                int res = Context.Deleteable<Inwarehouse>().Where(it => idArr.Contains(it.Id.ToString())).ExecuteCommand();
+                Context.Ado.CommitTran();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Context.Ado.RollbackTran();
+            }
+            return -1;
         }
 
         

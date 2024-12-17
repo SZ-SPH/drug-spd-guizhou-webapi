@@ -86,15 +86,17 @@ namespace ZR.Service.Business
                 List<string> planNoListItem = item.PlanNo.Split(",").ToList();
                 planNoListItem.ForEach((planNoItem) => 
                 {
+                    int serialNum = 1;
                     InwarhouseDetailDTO PlanNoCorrespondingItem = Context.Queryable<Inwarehousedetail>()
                     .LeftJoin<TGInwarehouse>((id,ti) => id.SerialNum == ti.PlanNo)
-                    .Where((id, ti) => id.SerialNum.Equals(planNoItem))
-                    .Select((id, ti) => new InwarhouseDetailDTO
+                    .LeftJoin<Inwarehouse>((id,ti,i) => i.Id == id.InwarehouseId)
+                    .Where((id, ti, i) => id.SerialNum.Equals(planNoItem))
+                    .Select((id, ti, i) => new InwarhouseDetailDTO
                     {
                         PlanNo = int.Parse(ti.PlanNo),
                         BillCode = ti.BillCode,
                         StockNo = ti.StockNo,
-                        SerialCode = 1,
+                        SerialCode = serialNum,
                         DrugDeptCode = ti.DrugDeptCode,
                         GroupCode = id.BatchId,
                         InType = "01",
@@ -109,13 +111,11 @@ namespace ZR.Service.Business
                         //有效期暂待定
                         ValidDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         ProducerCode = ti.ProducerCode,
-                        //供货单位代码待定
-                        CompanyCode = "",
+                        CompanyCode = i.SupplierCode,
                         RetailPrice = decimal.Parse(ti.RetailPrice),
                         WholesalePrice = decimal.Parse(ti.WholesalePrice),
                         PurchasePrice = decimal.Parse(ti.PurchasePrice),
                         InNum = int.Parse(ti.StockNum),
-                        //待定
                         RetailCost = decimal.Parse(ti.RetailPrice) * int.Parse(ti.StockNum),
                         WholesaleCost = decimal.Parse(ti.WholesalePrice) * int.Parse(ti.StockNum),
                         PurchaseCost = decimal.Parse(ti.PurchasePrice) * int.Parse(ti.StockNum),
@@ -138,11 +138,12 @@ namespace ZR.Service.Business
                         //待定
                         ProductionDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         //待定
-                        ApproveInfo = "",
+                        ApproveInfo = id.ApproveInfo,
                         SerialNum = id.SerialNum,
                         BatchId = id.BatchId,
                         //发票日期
-                        InvoiceDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                        InvoiceDate = i.BillTime.ToString("yyyy-MM-dd HH:mm:ss"),
+                        InvoiceNo = i.BillCode,
                     })
                     .Single();
                     InwarhouseHisDTO HisDTO = new InwarhouseHisDTO();
@@ -186,6 +187,7 @@ namespace ZR.Service.Business
                     HisDTO.operDate = PlanNoCorrespondingItem.OperDate;
                     HisDTO.invoiceDate = PlanNoCorrespondingItem.InvoiceDate;
                     pushHisList.Add(HisDTO);
+                    serialNum++;
                 });
                 string postUrl = $"http://192.168.2.21:9403/His/PhaInput";
                 var response = PostData(postUrl, pushHisList);

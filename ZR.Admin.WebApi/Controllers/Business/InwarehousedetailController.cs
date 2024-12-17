@@ -80,7 +80,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
         {
             var modal = parm.Adapt<Inwarehousedetail>().ToUpdate(HttpContext);
             var response = _InwarehousedetailService.UpdateInwarehousedetail(modal);
-
             return ToResponse(response);
         }
 

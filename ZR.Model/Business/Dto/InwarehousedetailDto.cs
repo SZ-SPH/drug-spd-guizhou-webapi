@@ -37,25 +37,33 @@ namespace ZR.Model.Business.Dto
         public DateTime? CreateTime { get; set; }
 
         public int? InwarehouseId { get; set; }
+        /// 流水号
+        /// </summary>
+        public string SerialNum { get; set; }
+        /// <summary>
+        /// 批号
+        /// </summary>
+        public string BatchNo { get; set; }
+        /// <summary>
+        /// 批次号
+        /// </summary>
+        public string BatchId { get; set; }
 
+        /// <summary>
+        /// 批文信息
+        /// </summary>
+        public string ApproveInfo { get; set; }
     }
 
     public class InwarehousedetaiWithDruglDto
     {
-
+        public int Id { get; set; }
         public string DrugCode { get; set; }
-
         public int InwarehouseQty { get; set; }
-
         public string Remark { get; set; }
-
         public DateTime CreateTime { get; set; }
-
         public int InwarehouseId { get; set; }
-
-
         public string PlanNo { get; set; }
-
         /// <summary>
         /// 采购单号 
         /// </summary>

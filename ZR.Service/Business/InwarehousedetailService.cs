@@ -27,6 +27,7 @@ namespace ZR.Service.Business
                 .Where((id, ti) => id.InwarehouseId == parm.InwarehouseId)
                 .Select((id, ti) => new InwarehousedetaiWithDruglDto
                 {
+                    Id = id.Id,
                     DrugCode = id.DrugCode,
                     InwarehouseQty = id.InwarehouseQty,
                     Remark = id.Remark,

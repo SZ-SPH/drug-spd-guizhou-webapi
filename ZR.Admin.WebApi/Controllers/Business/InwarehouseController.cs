@@ -94,7 +94,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         public IActionResult DeleteInwarehouse([FromRoute]string ids)
         {
             int res = _InwarehouseService.DeleteInwarehouse(ids);
-            return SUCCESS(res != 0 ? "处理成功" : "处理失败");
+            return SUCCESS(res != -1 ? "处理成功" : "处理失败");
         }
 
     }

@@ -51,5 +51,10 @@ namespace ZR.Model.Business
         /// </summary>
         public string BatchId { get; set; }
 
+        /// <summary>
+        /// 批文信息
+        /// </summary>
+        public string ApproveInfo { get; set; }
+
     }
 }
