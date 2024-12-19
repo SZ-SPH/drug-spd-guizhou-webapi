@@ -100,6 +100,39 @@ namespace ZR.Service.Business
             return Update(model, true);
         }
 
+        //删除入库明细
+        public int DeleteInwarehouseDetail(string ids)
+        {
+            try
+            {
+                Context.Ado.BeginTran();
+                List<Inwarehousedetail> InwarehouseDetailItemList = Context.Queryable<Inwarehousedetail>().Where(it => ids.Contains(it.Id.ToString())).ToList();
+                if (InwarehouseDetailItemList.Count != 0) 
+                {
+                    InwarehouseDetailItemList.ForEach((item) =>
+                    {
+                        //删除明细
+                        Context.Deleteable<Inwarehousedetail>().Where(it => it.Id == item.Id).ExecuteCommand();
+                        //修改planNo
+                        //修改主表入库数量
+                        Context.Updateable<Inwarehouse>().SetColumns(it => new Inwarehouse
+                        {
+                            StockNum = it.StockNum - item.InwarehouseQty,
+                            PlanNo = SqlFunc.Replace(it.PlanNo, item.SerialNum, "")
+                        })
+                        .Where(it => it.Id == item.InwarehouseId)
+                        .ExecuteCommand();
+                    });
+                }
+                Context.Ado.CommitTran();
+                return 1;
+            }catch(Exception e)
+            {
+                Context.Ado.RollbackTran();
+            }
+            return -1;
+        }
+
         /// <summary>
         /// 查询导出表达式
         /// </summary>

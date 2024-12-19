@@ -8,7 +8,7 @@ namespace ZR.Model.Business.Dto
     {
         public string State { get; set; }
         public string PlanType { get; set; }
-
+        public string BillCode { get; set; }
         public List<string> BillCodes { get; set; }
     }
 

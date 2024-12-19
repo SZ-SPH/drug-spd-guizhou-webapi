@@ -60,6 +60,7 @@ namespace ZR.Model.Business.Dto
         public int Id { get; set; }
         public string DrugCode { get; set; }
         public int InwarehouseQty { get; set; }
+        public string PurChaseOrderNum { get; set; }
         public string Remark { get; set; }
         public DateTime CreateTime { get; set; }
         public int InwarehouseId { get; set; }

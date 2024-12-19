@@ -93,8 +93,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
         public IActionResult DeleteInwarehousedetail([FromRoute]string ids)
         {
             var idArr = Tools.SplitAndConvert<int>(ids);
-
-            return ToResponse(_InwarehousedetailService.Delete(idArr));
+            int res = _InwarehousedetailService.DeleteInwarehouseDetail(ids);
+            return SUCCESS(res != -1 ? "处理成功":"处理失败");
         }
 
     }

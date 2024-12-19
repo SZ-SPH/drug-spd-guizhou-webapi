@@ -83,7 +83,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
         /// <returns></returns>
         [HttpPost("AppendSelectiveInwarehouse")]
         [ActionPermissionFilter(Permission = "tginwarehouse:generateInwarehouse")]
-        public IActionResult AppendSelectiveInwarehouse([FromBody]InwarehouseGenerateInwarehouseDto param)
+        public IActionResult AppendSelectiveInwarehouse([FromBody]List<AppendInwarehouseDetail> param)
         {
             var response = _InwarehouseService.AppendSelectiveInwarehouse(param);
             return SUCCESS(response ? "处理成功" : "处理失败");

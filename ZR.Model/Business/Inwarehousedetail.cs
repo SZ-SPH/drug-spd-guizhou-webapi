@@ -56,5 +56,10 @@ namespace ZR.Model.Business
         /// </summary>
         public string ApproveInfo { get; set; }
 
+        /// <summary>
+        /// 采购单号
+        /// </summary>
+        public string PurchaseOrderNum { get; set; }
+
     }
 }

@@ -19,6 +19,6 @@ namespace ZR.Service.Business.IBusinessService
         bool generateInwarehouse(List<InwarehouseGenerateInwarehouseDto> parm);
         int DeleteInwarehouse(string idArr);
         bool generateSelectiveInwarehouse(InwarehouseGenerateInwarehouseDto param);
-        bool AppendSelectiveInwarehouse(InwarehouseGenerateInwarehouseDto param);
+        bool AppendSelectiveInwarehouse(List<AppendInwarehouseDetail> param);
     }
 }

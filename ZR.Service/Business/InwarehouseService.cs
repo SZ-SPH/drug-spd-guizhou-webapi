@@ -70,7 +70,7 @@ namespace ZR.Service.Business
                 Inwarehouse inwarehouseItem = Context.Queryable<Inwarehouse>().Where(it => idArr.Contains(it.Id.ToString())).Single();
                 Context.Updateable<PhaInPlan>().SetColumns(it => it.Status == "0").Where(it => inwarehouseItem.PlanNo.Contains(it.PlanNo.ToString())).ExecuteCommand();
                 Context.Deleteable<Inwarehousedetail>().Where(it => idArr.Contains(it.InwarehouseId.ToString())).ExecuteCommand();
-                int res = Context.Deleteable<Inwarehouse>().Where(it => idArr.Contains(it.Id.ToString())).ExecuteCommand();
+                int res = Context.Deleteable<Inwarehouse>().Where(it => idArr.Contains(it.Id.ToString()) && it.PushStatu != "1").ExecuteCommand();
                 Context.Ado.CommitTran();
                 return res;
             }
@@ -87,61 +87,34 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public bool AppendSelectiveInwarehouse(InwarehouseGenerateInwarehouseDto param)
+        public bool AppendSelectiveInwarehouse(List<AppendInwarehouseDetail> param)
         {
-            //入参类似 billcode:IN1868586339822346240 planNos:103494,103495 
-            var planNoList = param.PlanNos.Select(decimal.Parse).ToList();
-            var planNoStr = string.Join(",", param.PlanNos);
-            //var planNoStr = param.PlanNos.Select(it => string.Join(",", it)).ToString();
-            //Inwarehouse inwarehouseItem = Context.Queryable<Inwarehouse>().Where(it => it.InwarehouseNum == param.PurchaseNum).Single();
             try 
             {
                 Context.Ado.BeginTran();
-                //查出当前主单
-                Inwarehouse inwarehouseItem = Context.Queryable<Inwarehouse>().Where(it => it.InwarehouseNum == param.PurchaseNum).Single();
-                //更改主订单状态
-                if (string.IsNullOrEmpty(inwarehouseItem.PurchaseOrderNum))
-                {
-                    Context.Updateable<Inwarehouse>()
-                    .SetColumns(it => new Inwarehouse
-                    {
-                        PlanNo = SqlFunc.IsNullOrEmpty(it.PlanNo) ? planNoStr : it.PlanNo + planNoStr,
-                        StockNum = it.StockNum + param.StockNum,
-                        PurchaseOrderNum = param.BillCode
-                    })
-                    .Where(it => it.InwarehouseNum == param.PurchaseNum) // 更新条件
-                    .ExecuteCommand();
-                }
-                else
-                {
-                    Context.Updateable<Inwarehouse>()
-                    .SetColumns(it => new Inwarehouse
-                    {
-                        PlanNo = it.PlanNo + planNoStr,
-                        StockNum = it.StockNum + param.StockNum,
-                    })
-                    .Where(it => it.InwarehouseNum == param.PurchaseNum && it.PurchaseOrderNum == param.BillCode) // 更新条件
-                    .ExecuteCommand();
-                }
-                //查出所需采购计划明细，构造数据
-                List<PhaInPlan> phaInPlanList = Context.Queryable<PhaInPlan>().Where(it => planNoList.Contains(it.PlanNo)).ToList();
                 List<Inwarehousedetail> inwarehousedetailList = new List<Inwarehousedetail>();
-                phaInPlanList.ForEach((item) =>
+                string inwarehouseItemNum = param[0].InwarehouseNum;
+                Inwarehouse inwarehouseItem = Context.Queryable<Inwarehouse>().Where(it => it.InwarehouseNum == inwarehouseItemNum).Single();
+                //更改主单应该入库数量
+                int totalStockNum = param.Sum(item => item.StockNum);
+                Context.Updateable<Inwarehouse>().SetColumns(it => new Inwarehouse { StockNum = totalStockNum }).Where(it => it.InwarehouseNum == inwarehouseItemNum).ExecuteCommand();
+                param.ForEach((item) =>
                 {
-                    Inwarehousedetail inwarehousedetailItem = new Inwarehousedetail()
+                    Inwarehousedetail inwarehouseDetailItem = new Inwarehousedetail()
                     {
                         DrugCode = item.DrugCode,
-                        InwarehouseQty = item.StockNum.ParseToInt(),
-                        InwarehouseId = inwarehouseItem.Id,
+                        InwarehouseQty = (item.StockNum),
                         CreateTime = DateTime.Now,
-                        SerialNum = item.PlanNo.ToString()
+                        SerialNum = item.PlanNo,
+                        InwarehouseId = inwarehouseItem.Id,
+                        PurchaseOrderNum = item.BillCode
                     };
-                    inwarehousedetailList.Add(inwarehousedetailItem);
+                    inwarehousedetailList.Add(inwarehouseDetailItem);
+                    //更新生成状态
+                    Context.Updateable<TGInwarehouse>().Where(it => it.PlanNo == item.PlanNo).SetColumns(it => new TGInwarehouse { Status = "1" }).ExecuteCommand();
                 });
                 //添加明细
                 Context.Insertable<Inwarehousedetail>(inwarehousedetailList).ExecuteCommand();
-                //更新生成状态
-                Context.Updateable<TGInwarehouse>().Where(it => planNoList.Contains(decimal.Parse(it.PlanNo))).SetColumns(it => new TGInwarehouse { Status = "1" }).ExecuteCommand();
                 Context.Ado.CommitTran();
                 return true;
             }
@@ -168,6 +141,7 @@ namespace ZR.Service.Business
                 InwarehouseNum = $"IN{SnowFlakeSingle.Instance.getID()}",
                 BillCode = param.BillCode,
                 BillTime = param.BillTime,
+                PushStatu = "0",
                 SupplierCode = param.SupplierCode,
                 SupplierName = companyInfo.FacName
             };
@@ -190,7 +164,6 @@ namespace ZR.Service.Business
                         CreateTime = DateTime.Now,
                         PlanNo = string.Join(",", item.PlanNos),
                         InwarehouseNum = $"IN{SnowFlakeSingle.Instance.getID()}",
-                        PurchaseOrderNum = item.BillCode,
                         StockNum = item.StockNum
                     };
                     Inwarehouse inwarehouse = Insertable(inwarehouseParm).ExecuteReturnEntity();
@@ -227,6 +200,8 @@ namespace ZR.Service.Business
         /// <returns></returns>
         public int UpdateInwarehouse(Inwarehouse model)
         {
+            CompanyInfo supplierItem = Context.Queryable<CompanyInfo>().Where(it => it.FacCode == model.SupplierCode).Single();
+            Context.Updateable<Inwarehouse>().SetColumns(it => it.SupplierName == supplierItem.FacName).Where(it => it.Id == model.Id).ExecuteCommand();
             return Update(model, true);
         }
 
@@ -239,7 +214,6 @@ namespace ZR.Service.Business
         {
             var predicate = Expressionable.Create<Inwarehouse>();
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.PlanNo), it => it.PlanNo.Contains(parm.PlanNo));
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.PurchaseOrderNum), it => it.PurchaseOrderNum.Equals(parm.PurchaseOrderNum));
             return predicate;
         }
     }

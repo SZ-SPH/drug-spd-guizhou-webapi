@@ -16,6 +16,7 @@ namespace ZR.Service.Business.IBusinessService
         Inwarehousedetail AddInwarehousedetail(Inwarehousedetail parm);
         int UpdateInwarehousedetail(Inwarehousedetail parm);
 
+        int DeleteInwarehouseDetail(string ids);
 
     }
 }

@@ -32,8 +32,17 @@ namespace ZR.Model.Business.Dto
     }
 
 
+    public class AppendInwarehouseDetail
+    {
+        public string PlanNo { get; set; }
+        public string BillCode { get; set; }
+        public int StockNum { get; set; }
+        public string DrugCode { get; set; }
+        public string InwarehouseNum { get; set; }
+    }
+
     /// <summary>
-    /// 生成入库单DTO
+    /// 生成入库单DTO 废弃
     /// </summary>
     public class InwarehouseGenerateInwarehouseDto
     {
@@ -42,7 +51,8 @@ namespace ZR.Model.Business.Dto
         public string PurchaseNum { get; set; }
         public List<string> PlanNos { get; set; }
         public int StockNum { get; set; }
-        public DateTime BillTime { get; set; }
+        public string BillTime { get; set; }
+        public string BillTimeFormat { get; set; }
         public string SupplierCode { get; set; }
     }
 
@@ -71,6 +81,10 @@ namespace ZR.Model.Business.Dto
         public int StockNum { get; set; }
 
         public int PushStatu { get; set; }
+        public string BillCode { get; set; }
+        public string BillTime { get; set; }
+        public string SupplierCode { get; set; }
+        public string SupplierName { get; set; }
         //public string[] PurchaseOrderNum { get; set; }
     }
 }

@@ -55,11 +55,6 @@ namespace ZR.Model.Business
         public int StockNum { get; set; }
 
         /// <summary>
-        /// 采购订单号
-        /// </summary>
-        public string PurchaseOrderNum { get; set; }
-
-        /// <summary>
         /// 推送状态
         /// </summary>
         public string PushStatu { get; set; }
@@ -73,7 +68,7 @@ namespace ZR.Model.Business
         /// <summary>
         /// 发票时间
         /// </summary>
-        public DateTime BillTime { get; set; }
+        public string BillTime { get; set; }
 
         /// <summary>
         /// 供应商编码
