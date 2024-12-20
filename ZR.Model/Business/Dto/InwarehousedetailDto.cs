@@ -53,6 +53,10 @@ namespace ZR.Model.Business.Dto
         /// 批文信息
         /// </summary>
         public string ApproveInfo { get; set; }
+
+        public string ValiDate { get; set; }
+
+        public string ProductDate { get; set; }
     }
 
     public class InwarehousedetaiWithDruglDto

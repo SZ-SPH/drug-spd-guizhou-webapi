@@ -16,8 +16,8 @@ namespace ZR.Model.Business
         /// <summary>
         /// 入库计划流水号 
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public string PlanNo { get; set; }
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
+        public int PlanNo { get; set; }
 
         /// <summary>
         /// 采购单号 

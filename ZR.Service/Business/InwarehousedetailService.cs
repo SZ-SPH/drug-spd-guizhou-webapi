@@ -33,7 +33,7 @@ namespace ZR.Service.Business
                     Remark = id.Remark,
                     CreateTime = id.CreateTime,
                     InwarehouseId = id.InwarehouseId,
-                    PlanNo = ti.PlanNo,
+                    PlanNo = ti.PlanNo.ToString(),
                     BillCode = ti.BillCode,
                     State = ti.State,
                     PlanType = ti.PlanType,

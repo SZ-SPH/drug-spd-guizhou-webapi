@@ -97,7 +97,8 @@ namespace ZR.Service.Business
                 Inwarehouse inwarehouseItem = Context.Queryable<Inwarehouse>().Where(it => it.InwarehouseNum == inwarehouseItemNum).Single();
                 //更改主单应该入库数量
                 int totalStockNum = param.Sum(item => item.StockNum);
-                Context.Updateable<Inwarehouse>().SetColumns(it => new Inwarehouse { StockNum = totalStockNum }).Where(it => it.InwarehouseNum == inwarehouseItemNum).ExecuteCommand();
+                string planNos = string.Join(",", param.Select(n => n.PlanNo));
+                Context.Updateable<Inwarehouse>().SetColumns(it => new Inwarehouse { StockNum = totalStockNum,PlanNo = planNos }).Where(it => it.InwarehouseNum == inwarehouseItemNum).ExecuteCommand();
                 param.ForEach((item) =>
                 {
                     Inwarehousedetail inwarehouseDetailItem = new Inwarehousedetail()
@@ -111,7 +112,7 @@ namespace ZR.Service.Business
                     };
                     inwarehousedetailList.Add(inwarehouseDetailItem);
                     //更新生成状态
-                    Context.Updateable<TGInwarehouse>().Where(it => it.PlanNo == item.PlanNo).SetColumns(it => new TGInwarehouse { Status = "1" }).ExecuteCommand();
+                    Context.Updateable<TGInwarehouse>().Where(it => it.PlanNo == int.Parse(item.PlanNo)).SetColumns(it => new TGInwarehouse { Status = "1" }).ExecuteCommand();
                 });
                 //添加明细
                 Context.Insertable<Inwarehousedetail>(inwarehousedetailList).ExecuteCommand();
@@ -168,19 +169,19 @@ namespace ZR.Service.Business
                     };
                     Inwarehouse inwarehouse = Insertable(inwarehouseParm).ExecuteReturnEntity();
                     List<Inwarehousedetail> inDetailList = Context.Queryable<TGInwarehouse>()
-                        .Where(it => item.PlanNos.Contains(it.PlanNo))
+                        .Where(it => item.PlanNos.Contains(it.PlanNo.ToString()))
                         .Select(it => new Inwarehousedetail
                         {
                             DrugCode = it.DrugCode,
                             InwarehouseQty = int.Parse(it.StockNum),
                             CreateTime = DateTime.Now,
                             InwarehouseId = inwarehouse.Id,
-                            SerialNum = it.PlanNo
+                            SerialNum = it.PlanNo.ToString()
                         })
                         .ToList();
                     Context.Insertable<Inwarehousedetail>(inDetailList).ExecuteCommand();
                     var planNoList = item.PlanNos.Select(decimal.Parse).ToList();
-                    Context.Updateable<TGInwarehouse>().Where(it => planNoList.Contains(decimal.Parse(it.PlanNo))).SetColumns(it => new TGInwarehouse { Status = "1" }).ExecuteCommand();
+                    Context.Updateable<TGInwarehouse>().Where(it => planNoList.Contains(it.PlanNo)).SetColumns(it => new TGInwarehouse { Status = "1" }).ExecuteCommand();
                 }
                 Context.Ado.CommitTran();
                 return true;

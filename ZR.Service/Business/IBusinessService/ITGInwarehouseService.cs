@@ -15,7 +15,7 @@ namespace ZR.Service.Business.IBusinessService
 
         TGInwarehouse AddTGInwarehouse(TGInwarehouse parm);
 
-        int UpdateTGInwarehouse(TGInwarehouse parm);
+        int UpdateTGInwarehouse(InwarhouseDetailDTO parm);
 
 
         PagedInfo<TGInwarehouseDto> ExportList(TGInwarehouseQueryDto parm);

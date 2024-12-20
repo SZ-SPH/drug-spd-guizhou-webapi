@@ -51,7 +51,7 @@ namespace ZR.Service.Business
         public TGInwarehouse GetInfo(string Id)
         {
             var response = Queryable()
-                .Where(x => x.PlanNo == Id)
+                .Where(x => x.PlanNo.ToString() == Id)
                 .First();
 
             return response;
@@ -72,9 +72,15 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public int UpdateTGInwarehouse(TGInwarehouse model)
+        public int UpdateTGInwarehouse(InwarhouseDetailDTO model)
         {
-            return Update(model, true);
+            return Context.Updateable<Inwarehousedetail>().SetColumns(it => new Inwarehousedetail()
+            {
+                BatchNo = model.BatchNo,
+                ValiDate = model.ValiDate,
+                ApproveInfo = model.ApproveInfo,
+                ProductDate = model.ProductDate,
+            }).Where(it => it.DrugCode == model.DrugCode).ExecuteCommand();
         }
 
         public object PushInwarehouseInfoToHis(TGInwarehouseQueryDto parm)
@@ -100,12 +106,12 @@ namespace ZR.Service.Business
                     {
                         int serialNum = 1;
                         InwarhouseDetailDTO PlanNoCorrespondingItem = Context.Queryable<Inwarehousedetail>()
-                        .LeftJoin<TGInwarehouse>((id, ti) => id.SerialNum == ti.PlanNo)
+                        .LeftJoin<TGInwarehouse>((id, ti) => id.SerialNum == ti.PlanNo.ToString())
                         .LeftJoin<Inwarehouse>((id, ti, i) => i.Id == id.InwarehouseId)
                         .Where((id, ti, i) => id.SerialNum.Equals(detail.SerialNum))
                         .Select((id, ti, i) => new InwarhouseDetailDTO
                         {
-                            PlanNo = int.Parse(ti.PlanNo),
+                            PlanNo = (ti.PlanNo),
                             BillCode = ti.BillCode,
                             StockNo = ti.StockNo,
                             SerialCode = serialNum,

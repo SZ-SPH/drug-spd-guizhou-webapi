@@ -128,10 +128,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [HttpPut]
         [ActionPermissionFilter(Permission = "tginwarehouse:edit")]
         [Log(Title = "采购计划入库", BusinessType = BusinessType.UPDATE)]
-        public IActionResult UpdateTGInwarehouse([FromBody] TGInwarehouseDto parm)
+        public IActionResult UpdateTGInwarehouse([FromBody] InwarhouseDetailDTO parm)
         {
-            var modal = parm.Adapt<TGInwarehouse>().ToUpdate(HttpContext);
-            var response = _TGInwarehouseService.UpdateTGInwarehouse(modal);
+            //var modal = parm.Adapt<TGInwarehouse>().ToUpdate(HttpContext);
+            var response = _TGInwarehouseService.UpdateTGInwarehouse(parm);
 
             return ToResponse(response);
         }

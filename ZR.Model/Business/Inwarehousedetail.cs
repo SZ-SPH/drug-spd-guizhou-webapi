@@ -60,6 +60,14 @@ namespace ZR.Model.Business
         /// 采购单号
         /// </summary>
         public string PurchaseOrderNum { get; set; }
+        /// <summary>
+        /// 生产日期
+        /// </summary>
+        public string ProductDate { get; set; }
+        /// <summary>
+        /// 有效期
+        /// </summary>
+        public string ValiDate { get; set; }
 
     }
 }
