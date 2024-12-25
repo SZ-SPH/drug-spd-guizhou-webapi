@@ -202,8 +202,14 @@ namespace ZR.Service.Business
         public int UpdateInwarehouse(Inwarehouse model)
         {
             CompanyInfo supplierItem = Context.Queryable<CompanyInfo>().Where(it => it.FacCode == model.SupplierCode).Single();
-            Context.Updateable<Inwarehouse>().SetColumns(it => it.SupplierName == supplierItem.FacName).Where(it => it.Id == model.Id).ExecuteCommand();
-            return Update(model, true);
+            //int res = Context.Updateable<Inwarehouse>().SetColumns(it => it.SupplierName == supplierItem.FacName).Where(it => it.Id == model.Id).ExecuteCommand();
+            int res = Context.Updateable<Inwarehouse>().SetColumns(it => new Inwarehouse()
+            {
+                SupplierName = supplierItem.FacName,
+                BillCode = model.BillCode,
+                BillTime = model.BillTime
+            }).Where(it => it.Id == model.Id).ExecuteCommand();
+            return res;
         }
 
         /// <summary>
