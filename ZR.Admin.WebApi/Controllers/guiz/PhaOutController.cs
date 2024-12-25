@@ -96,12 +96,13 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     {
                         OutOrderCode = GenerateUniqueOutOrderCode(), // 生成唯一的出库单代码
                         OutWarehouseID = item.DrugDeptCode,
+                        UseReceive = item.GetPerson,
                         //OutBillCode = item.OutBillCode,
                         InpharmacyId = item.DrugStorageCode,
                         Times = DateTime.Now
                     };
                     var modal = outOrder.Adapt<OutOrder>().ToCreate(HttpContext);
-                    currentOrder = _OutOrderService.AddOutOrder(outOrder);
+                    currentOrder = _OutOrderService.AddOutOrder(modal);
                     // 将出库单添加到已处理的字典中
                     processedOrders[orderKey] = outOrder;
                 }
@@ -280,7 +281,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                 phaOutInQuery.beginTime = new DateTime(2024, 12, 1);
                 phaOutInQuery.endTime = DateTime.Now;
                 var x = await SendRequestsAsync(phaOutInQuery);
-                
+
                 foreach (var item in x)
                 {
                     var nu = _PhaOutService.GetInfo(item.OutBillCode);
@@ -301,6 +302,8 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             {
                 throw new Exception(ex.Message);
             }
+
+
         }
         private async Task<List<PhaOut>> SendRequestsAsync(PhaOutInQuery phaOutInQuery)
         {

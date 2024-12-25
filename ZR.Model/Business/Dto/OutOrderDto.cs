@@ -17,6 +17,18 @@ namespace ZR.Model.Business.Dto
     /// </summary>
     public class OutOrderDto
     {
+
+
+        /// <summary>
+        /// 领取部门
+        /// </summary>
+        public string InpharmacyName { get; set; }
+        /// <summary>
+        /// 发出仓库
+        /// </summary>
+        public string OutWarehouseName { get; set; }
+
+
         [Required(ErrorMessage = "Id不能为空")]
         [ExcelColumn(Name = "Id")]
         [ExcelColumnName("Id")]

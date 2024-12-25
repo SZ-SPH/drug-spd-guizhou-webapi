@@ -20,6 +20,8 @@ namespace ZR.Model.GuiHis.Dto
         public string DrugType { get; set; }
         public string ProducerCode { get; set; }
         public string CompanyCode { get; set; }
+        public string DrugDeptName { get; set; }
+        public string DrugStorageName { get; set; }
     }
 
     /// <summary>
@@ -27,6 +29,10 @@ namespace ZR.Model.GuiHis.Dto
     /// </summary>
     public class PhaOutDto
     {
+        public string DrugDeptName { get; set; }
+        public string DrugStorageName { get; set; }
+
+
         [ExcelColumn(Name = "出库科室编码")]
         [ExcelColumnName("出库科室编码")]
         public string DrugDeptCode { get; set; }
@@ -272,4 +278,6 @@ namespace ZR.Model.GuiHis.Dto
         [ExcelColumn(Name = "出库类型")]
         public string OutTypeLabel { get; set; }
     }
+
+  
 }

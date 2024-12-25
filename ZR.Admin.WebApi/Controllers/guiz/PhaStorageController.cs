@@ -183,43 +183,22 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         [HttpPost("TongBu")]
         public async Task<IActionResult> TongBu()
         {
-            //直接清空再添加
+           
             try
-            {
-                var dep = _DrugStoreService.GetAll();
-                foreach (var item in dep)
-                {
-                    int drugDeptCode;
-                    if (!int.TryParse(item.DrugDeptCode?.Trim(), out drugDeptCode))
-                    {
-                        continue; // 或者根据需要处理
-                    }
-                    reqPhaStorage x = await SendRequestsAsync(drugDeptCode);
-                    if (x == null || x.data == null)
-                    {
-                        continue; // 或者处理无数据返回的逻辑
-                    }
-                    foreach (var items in x.data)
-                    {                
-                            if (items != null)
-                            {
-                             var modal = items.Adapt<PhaStorage>().ToCreate(HttpContext);
-                             _PhaStorageService.AddPhaStorage(modal);
-                            }
-                    }
-                }
+            {             
+                _PhaStorageService.TruncatePhaStorage();
                 var departments = _DepartmentsService.GetAll();
                 foreach (var item in departments)
                 {
                     int drugDeptCode;
                     if (!int.TryParse(item.DeptCode?.Trim(), out drugDeptCode))
                     {
-                        continue; // 或者根据需要处理
+                        continue;
                     }
                     reqPhaStorage x = await SendRequestsAsync(drugDeptCode);
                     if (x == null || x.data == null)
                     {
-                        continue; // 或者处理无数据返回的逻辑
+                        continue; 
                     }
                     foreach (var items in x.data)
                     {
@@ -227,8 +206,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                         {
                             var modal = items.Adapt<PhaStorage>().ToCreate(HttpContext);
                             _PhaStorageService.AddPhaStorage(modal);
-                        }
-                        //}
+                        }                      
                     }
                 }
                 return SUCCESS("true");

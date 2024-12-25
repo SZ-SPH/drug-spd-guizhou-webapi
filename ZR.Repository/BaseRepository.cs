@@ -306,7 +306,7 @@ namespace ZR.Repository
         {
             var page = new PagedInfo<T>();
             var total = 0;
-            page.PageSize = parm.PageSize;
+            page.PageSize = parm.PageSize;  
             page.PageIndex = parm.PageNum;
             if (parm.Sort.IsNotEmpty())
             {

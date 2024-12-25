@@ -5,6 +5,8 @@ using ZR.Repository;
 using ZR.Model.GuiHis.Dto;
 using ZR.Service.Guiz.IGuizService;
 using ZR.Model.GuiHis;
+using JinianNet.JNTemplate;
+using System.ComponentModel;
 
 
 namespace ZR.Service.Guiz
@@ -22,16 +24,28 @@ namespace ZR.Service.Guiz
         /// <returns></returns>
         public PagedInfo<PhaOutDto> GetList(PhaOutQueryDto parm)
         {
+
             var predicate = QueryExp(parm);
-
-            var response = Queryable()
+    
+                        var response = Queryable()
+                .LeftJoin<Departments>((p, d1) => p.DrugDeptCode == d1.DeptCode)
+                .LeftJoin<Departments>((p, d1, d2) => p.DrugStorageCode == d2.DeptCode)
                 .Where(predicate.ToExpression())
-                .ToPage<PhaOut, PhaOutDto>(parm);
-
+         .Where((p, d1, d2) => string.IsNullOrEmpty(parm.DrugDeptName) || d1.DeptName.Contains(parm.DrugDeptName)) // 使用 DeptName 过滤
+        .Where((p, d1, d2) => string.IsNullOrEmpty(parm.DrugStorageName) || d2.DeptName.Contains(parm.DrugStorageName))
+                .Select((p, d1, d2) => new PhaOutDto
+                {
+                    OutBillCode = p.OutBillCode.SelectAll(),
+                    DrugDeptName = d1.DeptName,
+                    DrugStorageName = d2.DeptName,
+                })
+                .ToPage(parm);
+    
             return response;
         }
 
-
+    //多表查询存在别名不一致,请把Where中的it改成p就可以了，特殊需求可以使用.Select((x, y)=>new{ id=x.id,name=y.name
+    //}).MergeTable().Orderby(xxx=>xxx.Id)功能将Select中的多表结果集变成单表，这样就可以不限制别名一样
         /// <summary>
         /// 获取详情
         /// </summary>
@@ -151,6 +165,31 @@ namespace ZR.Service.Guiz
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugType), it => it.DrugType == parm.DrugType);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ProducerCode), it => it.ProducerCode == parm.ProducerCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.CompanyCode), it => it.CompanyCode == parm.CompanyCode);
+            return predicate;
+        }
+
+        private static Expressionable<PhaOutDto> QueryExps(PhaOutQueryDto parm)
+        {
+            var predicate = Expressionable.Create<PhaOutDto>();
+
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), p => p.DrugDeptCode == parm.DrugDeptCode);
+            predicate = predicate.AndIF(parm.OutBillCode != null, p => p.OutBillCode == parm.OutBillCode);
+            predicate = predicate.AndIF(parm.SerialCode != null, p => p.SerialCode == parm.SerialCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.GroupCode), p => p.GroupCode == parm.GroupCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.OutListCode), p => p.OutListCode == parm.OutListCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.OutType), p => p.OutType == parm.OutType);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.Class3MeaningCode), p => p.Class3MeaningCode == parm.Class3MeaningCode);
+            predicate = predicate.AndIF(parm.InBillCode != null, p => p.InBillCode == parm.InBillCode);
+            predicate = predicate.AndIF(parm.InSerialCode != null, p => p.InSerialCode == parm.InSerialCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.InListCode), p => p.InListCode == parm.InListCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), p => p.DrugCode == parm.DrugCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), p => p.TradeName.Contains(parm.TradeName));
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugType), p => p.DrugType == parm.DrugType);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ProducerCode), p => p.ProducerCode == parm.ProducerCode);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.CompanyCode), p => p.CompanyCode == parm.CompanyCode);
+            //predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptName), p => p.DrugDeptName.Contains(parm.DrugDeptName));
+            //predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugStorageName), p => p.DrugStorageName.Contains(parm.DrugStorageName));
+
             return predicate;
         }
     }

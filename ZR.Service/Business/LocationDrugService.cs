@@ -4,36 +4,29 @@ using ZR.Model.Business.Dto;
 using ZR.Model.Business;
 using ZR.Repository;
 using ZR.Service.Business.IBusinessService;
-using ZR.Model.GuiHis.Dto;
-using ZR.Model.GuiHis;
 
 namespace ZR.Service.Business
 {
     /// <summary>
-    /// 出库单Service业务层处理
+    /// 货位药品Service业务层处理
     /// </summary>
-    [AppService(ServiceType = typeof(IOutOrderService), ServiceLifetime = LifeTime.Transient)]
-    public class OutOrderService : BaseService<OutOrder>, IOutOrderService
+    [AppService(ServiceType = typeof(ILocationDrugService), ServiceLifetime = LifeTime.Transient)]
+    public class LocationDrugService : BaseService<LocationDrug>, ILocationDrugService
     {
         /// <summary>
-        /// 查询出库单列表
+        /// 查询货位药品列表
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<OutOrderDto> GetList(OutOrderQueryDto parm)
+        public PagedInfo<LocationDrugDto> GetList(LocationDrugQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
-           .LeftJoin<Departments>((p, d1) => p.InpharmacyId == d1.DeptCode)
-           .LeftJoin<Departments>((p, d1, d2) => p.OutWarehouseID == d2.DeptCode).Where(predicate.ToExpression())
-           .Select((p, d1, d2) => new OutOrderDto
-           {
-               Id = p.Id.SelectAll(),
-               InpharmacyName = d1.DeptName,
-               OutWarehouseName = d2.DeptName,
-           })
-           .ToPage(parm);
+                //.OrderBy("Id asc")
+                .Where(predicate.ToExpression())
+                .ToPage<LocationDrug, LocationDrugDto>(parm);
+
             return response;
         }
 
@@ -43,7 +36,7 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public OutOrder GetInfo(int Id)
+        public LocationDrug GetInfo(int Id)
         {
             var response = Queryable()
                 .Where(x => x.Id == Id)
@@ -53,44 +46,44 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 添加出库单
+        /// 添加货位药品
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public OutOrder AddOutOrder(OutOrder model)
+        public LocationDrug AddLocationDrug(LocationDrug model)
         {
             return Insertable(model).ExecuteReturnEntity();
         }
 
         /// <summary>
-        /// 修改出库单
+        /// 修改货位药品
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public int UpdateOutOrder(OutOrder model)
+        public int UpdateLocationDrug(LocationDrug model)
         {
             return Update(model, true);
         }
 
         /// <summary>
-        /// 清空出库单
+        /// 清空货位药品
         /// </summary>
         /// <returns></returns>
-        public bool TruncateOutOrder()
+        public bool TruncateLocationDrug()
         {
-            var newTableName = $"OutOrder_{DateTime.Now:yyyyMMdd}";
+            var newTableName = $"LocationDrug_{DateTime.Now:yyyyMMdd}";
             if (Queryable().Any() && !Context.DbMaintenance.IsAnyTable(newTableName))
             {
-                Context.DbMaintenance.BackupTable("OutOrder", newTableName);
+                Context.DbMaintenance.BackupTable("LocationDrug", newTableName);
             }
             
             return Truncate();
         }
         /// <summary>
-        /// 导入出库单
+        /// 导入货位药品
         /// </summary>
         /// <returns></returns>
-        public (string, object, object) ImportOutOrder(List<OutOrder> list)
+        public (string, object, object) ImportLocationDrug(List<LocationDrug> list)
         {
             var x = Context.Storageable(list)
                 .SplitInsert(it => !it.Any())
@@ -115,17 +108,17 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 导出出库单
+        /// 导出货位药品
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<OutOrderDto> ExportList(OutOrderQueryDto parm)
+        public PagedInfo<LocationDrugDto> ExportList(LocationDrugQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
                 .Where(predicate.ToExpression())
-                .Select((it) => new OutOrderDto()
+                .Select((it) => new LocationDrugDto()
                 {
                 }, true)
                 .ToPage(parm);
@@ -138,14 +131,12 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        private static Expressionable<OutOrder> QueryExp(OutOrderQueryDto parm)
+        private static Expressionable<LocationDrug> QueryExp(LocationDrugQueryDto parm)
         {
-            var predicate = Expressionable.Create<OutOrder>();
+            var predicate = Expressionable.Create<LocationDrug>();
 
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.OutOrderCode), it => it.OutOrderCode == parm.OutOrderCode);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.InpharmacyId), it => it.InpharmacyId == parm.InpharmacyId);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.OutWarehouseID), it => it.OutWarehouseID == parm.OutWarehouseID);
-            predicate = predicate.AndIF(parm.OutBillCode != null, it => it.OutBillCode == parm.OutBillCode);
+            predicate = predicate.AndIF(parm.LocationId != null, it => it.LocationId == parm.LocationId);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugtermId), it => it.DrugtermId == parm.DrugtermId);
             return predicate;
         }
     }

@@ -86,6 +86,7 @@ namespace ZR.Service.Business
         public object PushInwarehouseInfoToHis(TGInwarehouseQueryDto parm)
         {
             //按照采购单号分组推送
+            string n = "";
             List<Inwarehouse> iwarehouseList = Context.Queryable<Inwarehouse>().Where(it => parm.BillCodes.Contains(it.InwarehouseNum)).ToList();
             iwarehouseList.ForEach((inwarehouseListItem) =>
             {
@@ -210,6 +211,7 @@ namespace ZR.Service.Business
                     var jsonData = JsonConvert.SerializeObject(pushHisList);
                     var response = PostData(postUrl, pushHisList);
                     var responseDTO = JsonConvert.DeserializeObject<InwarhouseHisResponseDTO>(response);
+                    n = response;
                     if ("1".Equals(responseDTO.Code))
                     {
                         Context.Updateable<Inwarehouse>().UpdateColumns(it => new Inwarehouse()
@@ -219,7 +221,7 @@ namespace ZR.Service.Business
                     }
                 }
             });
-            return null;
+            return n;
         }
 
         private string PostData(string Url, object Data)

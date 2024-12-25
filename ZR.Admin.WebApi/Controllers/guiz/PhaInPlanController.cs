@@ -194,10 +194,10 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     }
                     else if (n == null)
                     {
+                        item.Status = "0";
                         var modal = item.Adapt<PhaInPlan>().ToCreate(HttpContext);
                         var response = _PhaInPlanService.AddPhaInPlan(modal);
                     }
-
                 }
                 return SUCCESS("true");
             }

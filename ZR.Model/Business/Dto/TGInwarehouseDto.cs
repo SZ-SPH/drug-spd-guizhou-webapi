@@ -128,8 +128,8 @@ namespace ZR.Model.Business.Dto
         public string invoiceDate { get; set; } // 发票上的发票日期
         public string productionDate { get; set; } // 生产日期
         public string approveInfo { get; set; } // 批文信息
-        public string tracCode { get; set; } // 药品追溯码
-        public string caseCode { get; set; } // 箱码
+        //public string tracCode { get; set; } // 药品追溯码
+        //public string caseCode { get; set; } // 箱码
     }
 
     /// <summary>

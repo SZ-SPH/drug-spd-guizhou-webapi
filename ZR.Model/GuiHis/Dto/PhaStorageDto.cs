@@ -18,6 +18,8 @@ namespace ZR.Model.GuiHis.Dto
     /// </summary>
     public class PhaStorageDto
     {
+        public string DrugDeptName { get; set; }
+
         [Required(ErrorMessage = "库存科室不能为空")]
         [ExcelColumn(Name = "库存科室")]
         [ExcelColumnName("库存科室")]
