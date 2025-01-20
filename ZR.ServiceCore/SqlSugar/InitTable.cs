@@ -65,6 +65,7 @@ namespace ZR.ServiceCore.SqlSugar
         public static void InitNewTb()
         {
             var db = DbScoped.SugarScope;
+            
             var t1 = db.DbMaintenance.IsAnyTable(typeof(UserOnlineLog).Name);
             if (!t1)
             {

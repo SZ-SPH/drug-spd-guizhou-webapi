@@ -4,12 +4,16 @@ namespace ZR.Model.Business.Dto
     /// <summary>
     /// 出库单查询对象
     /// </summary>
-    public class OutOrderQueryDto : PagerInfo 
+    public class OutOrderQueryDto : PagerInfo
     {
         public string OutOrderCode { get; set; }
         public string InpharmacyId { get; set; }
         public string OutWarehouseID { get; set; }
         public long? OutBillCode { get; set; }
+        public string deptname { get; set; }
+        public string compname { get; set; }
+
+
     }
 
     /// <summary>
@@ -18,6 +22,7 @@ namespace ZR.Model.Business.Dto
     public class OutOrderDto
     {
 
+        public string Billcodesf { get; set; }
 
         /// <summary>
         /// 领取部门
@@ -70,6 +75,7 @@ namespace ZR.Model.Business.Dto
         [ExcelColumn(Name = "创建人")]
         [ExcelColumnName("创建人")]
         public string CreateBy { get; set; }
+        public string Type { get; set; }
 
 
 

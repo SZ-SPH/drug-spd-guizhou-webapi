@@ -17,7 +17,7 @@ namespace ZR.Model.Business
         /// 药品编码 关联  
         /// </summary>
         public string DrugCode { get; set; }
-
+        public string ProductCode { get; set; }
         /// <summary>
         /// 入库数量 
         /// </summary>
@@ -68,6 +68,20 @@ namespace ZR.Model.Business
         /// 有效期
         /// </summary>
         public string ValiDate { get; set; }
+        /// <summary>
+        /// 产地 extCode1
+        /// </summary>
+        public string InName { get; set; }
+        /// <summary>
+        /// 购入价（最小单位价格）
+        /// </summary>
+        public decimal MixBuyPrice { get; set; }
+        /// <summary>
+        /// 最小单位零售价
+        /// </summary>
+        public decimal MixOutPrice { get; set; }
+
+        public string Tstars { get; set; }
 
     }
 }

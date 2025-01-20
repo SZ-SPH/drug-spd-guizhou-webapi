@@ -26,6 +26,10 @@ namespace ZR.Model.GuiHis.Dto
     /// </summary>
     public class PhaInPlanDto
     {
+        public string ApproveInfo { get; set; }
+
+        public string CompanyCode { get; set; } // 生成出库单 0未生成 1已生成
+        public string CompanyName { get; set; } // 生成出库单 0未生成 1已生成
         [Required(ErrorMessage = "入库计划流水号不能为空")]
         [ExcelColumn(Name = "入库计划流水号")]
         [ExcelColumnName("入库计划流水号")]
@@ -158,5 +162,7 @@ namespace ZR.Model.GuiHis.Dto
 
         [ExcelColumn(Name = "生成出库单 0 未生成 1已生成")]
         public string Status { get; set; }
+        public DateTime? EndDate { get; set; }
+        public decimal? Qty { get; set; }
     }
 }

@@ -33,6 +33,7 @@ namespace ZR.Model.Business.Dto
         [ExcelColumnName("状态")]
         public string State { get; set; }
 
+        public string Orderby { get; set; }
 
 
         [ExcelColumn(Name = "状态")]

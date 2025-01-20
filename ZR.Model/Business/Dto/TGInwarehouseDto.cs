@@ -9,9 +9,35 @@ namespace ZR.Model.Business.Dto
         public string State { get; set; }
         public string PlanType { get; set; }
         public string BillCode { get; set; }
+        public string Pname { get; set; }
+        public string planNo { get; set; }
+        public string DrugName { get; set; }
+        public string DrugCode { get; set; }
+        
+        public string EndState { get; set; }
         public List<string> BillCodes { get; set; }
     }
+    public class Push
+    {
+        public List<string> BillCodes { get; set; }
+    }
+    
 
+    public class AddDec
+    {
+        public string PlanNo { get; set; }
+        public string BatchNo { get; set; }
+        public string ValiDate { get; set; }
+        public string ProductDate { get; set; }
+        public string ApproveInfo { get; set; }
+        public decimal Num { get; set; }
+        public decimal MixBuyPrice { get; set; }
+        public decimal MixOutPrice { get; set; }
+        public string ProductCode { get; set; }
+
+        
+        public int OnId { get; set; }
+    }
     public class InwarhouseDetailDTO
     {
         public int PlanNo { get; set; } // 入库计划流水号
@@ -137,6 +163,11 @@ namespace ZR.Model.Business.Dto
     /// </summary>
     public class TGInwarehouseDto
     {
+        public DateTime? EndDate { get; set; } // 生成出库单 0未生成 1已生成
+        public string ApproveInfo { get; set; }
+
+        public string CompanyCode { get; set; } // 生成出库单 0未生成 1已生成
+        public string CompanyName { get; set; } // 生成出库单 0未生成 1已生成
         [ExcelColumn(Name = "自增ID")]
         [ExcelColumnName("自增ID")]
         public int? Id { get; set; }
@@ -252,6 +283,7 @@ namespace ZR.Model.Business.Dto
         [ExcelColumn(Name = "采购流水号")]
         [ExcelColumnName("采购流水号")]
         public string StockNo { get; set; }
+        public decimal? Qty { get; set; }
 
         [ExcelIgnore]
         public string ReplacePlanNo { get; set; }

@@ -12,12 +12,13 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<InwarehouseDto> GetList(InwarehouseQueryDto parm);
 
         Inwarehouse GetInfo(int Id);
+        Inwarehouse GetInfoff(int Id);
 
-
+        
         Inwarehouse AddInwarehouse(Inwarehouse parm);
         int UpdateInwarehouse(Inwarehouse parm);
         bool generateInwarehouse(List<InwarehouseGenerateInwarehouseDto> parm);
-        int DeleteInwarehouse(string idArr);
+        string DeleteInwarehouse(int idArr);
         bool generateSelectiveInwarehouse(InwarehouseGenerateInwarehouseDto param);
         bool AppendSelectiveInwarehouse(List<AppendInwarehouseDetail> param);
     }

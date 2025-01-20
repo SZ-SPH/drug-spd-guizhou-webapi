@@ -24,8 +24,12 @@ namespace ZR.Service.Business
         {
             var predicate = QueryExp(parm);
 
-            var response = Queryable()
+            var response = Queryable().LeftJoin<Departments>((it,t)=> it.InwarehouseArea==t.DeptCode)
                 .Where(predicate.ToExpression())
+                .Select((it, t) =>new Inwarehouse
+                {
+                    InwarehouseArea=t.DeptName
+                },true)
                 .OrderBy(it => it.CreateTime,OrderByType.Desc)
                 .ToPage<Inwarehouse, InwarehouseDto>(parm);
 
@@ -46,7 +50,18 @@ namespace ZR.Service.Business
 
             return response;
         }
+        public Inwarehouse GetInfoff(int Id)
+        {
+            var response = Queryable()
+                .LeftJoin<Departments>((x,f)=>x.InwarehouseArea == f.DeptCode)
+                .Where(x => x.Id == Id).Select((x,f)=>new Inwarehouse
+                {
+                    InwarehouseArea = f.DeptName,
+                },true)
+                .First();
 
+            return response;
+        }
         /// <summary>
         /// 添加入库主单
         /// </summary>
@@ -62,23 +77,29 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="idArr"></param>
         /// <returns></returns>
-        public int DeleteInwarehouse(string idArr)
+        public string DeleteInwarehouse(int idArr)
         {
             try
             {
+
                 Context.Ado.BeginTran();
-                Inwarehouse inwarehouseItem = Context.Queryable<Inwarehouse>().Where(it => idArr.Contains(it.Id.ToString())).Single();
-                Context.Updateable<PhaInPlan>().SetColumns(it => it.Status == "0").Where(it => inwarehouseItem.PlanNo.Contains(it.PlanNo.ToString())).ExecuteCommand();
-                Context.Deleteable<Inwarehousedetail>().Where(it => idArr.Contains(it.InwarehouseId.ToString())).ExecuteCommand();
-                int res = Context.Deleteable<Inwarehouse>().Where(it => idArr.Contains(it.Id.ToString()) && it.PushStatu != "1").ExecuteCommand();
+                Inwarehouse inwarehouseItem = Context.Queryable<Inwarehouse>().Where(it => it.Id== idArr ).Single();
+
+                if(Context.Queryable<Inwarehousedetail>().Where(it => it.InwarehouseId==inwarehouseItem.Id && it.Tstars == "已推送").ToList().Count() > 0)
+                {
+                    return inwarehouseItem.InwarehouseNum;
+                } ;
+                //Context.Updateable<PhaInPlan>().SetColumns(it => it.Status == "0").Where(it => inwarehouseItem.PlanNo.Contains(it.PlanNo.ToString())).ExecuteCommand();
+                Context.Deleteable<Inwarehousedetail>().Where(it => it.InwarehouseId==idArr).ExecuteCommand();
+                int res = Context.Deleteable<Inwarehouse>().Where(it => it.Id==idArr && it.PushStatu != "已推送").ExecuteCommand();
                 Context.Ado.CommitTran();
-                return res;
+                return res>0?"成功": inwarehouseItem.InwarehouseNum;
             }
             catch (Exception e)
             {
                 Context.Ado.RollbackTran();
             }
-            return -1;
+            return "true";
         }
 
         
@@ -138,11 +159,12 @@ namespace ZR.Service.Business
             var inwarehouseParm = new Inwarehouse()
             {
                 CreateMan = username,
+                InwarehouseArea = param.inwarehouseArea,
                 CreateTime = DateTime.Now,
                 InwarehouseNum = $"IN{SnowFlakeSingle.Instance.getID()}",
                 BillCode = param.BillCode,
                 BillTime = param.BillTime,
-                PushStatu = "0",
+                PushStatu = "",
                 SupplierCode = param.SupplierCode,
                 SupplierName = companyInfo.FacName
             };

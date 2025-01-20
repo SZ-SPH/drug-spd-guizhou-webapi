@@ -5,6 +5,8 @@ using ZR.Repository;
 using ZR.Model.GuiHis.Dto;
 using ZR.Service.Guiz.IGuizService;
 using ZR.Model.GuiHis;
+using Aliyun.OSS;
+using ZR.Model.Business.Dto;
 
 namespace ZR.Service.Guiz
 {
@@ -30,7 +32,60 @@ namespace ZR.Service.Guiz
             return response;
         }
 
+        public List<InwarehousedetaiWithDruglDto> GetInfos(Inwarehousedetail parm)
+        {
 
+            var response = Context.Queryable<Inwarehousedetail>()
+                .LeftJoin<TGInwarehouse>((id, ti) => id.SerialNum == ti.PlanNo.ToString())
+                .LeftJoin<CompanyInfo>((id, ti, c) => id.ProductCode == c.FacCode)
+                .LeftJoin<Departments>((id, ti, c, f) => f.DeptCode == ti.DrugDeptCode)
+                .Where((id, ti) => id.InwarehouseId == parm.InwarehouseId && ti.PlanNo.ToString() == parm.SerialNum)
+                .Select((id, ti, c, f) => new InwarehousedetaiWithDruglDto
+                {
+                    BatchNo = id.BatchNo,
+                    ApproveInfo = id.ApproveInfo,
+                    ValiDate = id.ValiDate,
+                    ProductDate = id.ProductDate,
+                    Id = id.Id,
+                    DrugCode = id.DrugCode,
+                    InwarehouseQty = id.InwarehouseQty,
+                    Remark = id.Remark,
+                    CreateTime = id.CreateTime,
+                    InwarehouseId = id.InwarehouseId,
+                    PlanNo = ti.PlanNo.ToString(),
+                    BillCode = ti.BillCode,
+                    State = ti.State,
+                    PlanType = ti.PlanType,
+                    DrugDeptCode = f.DeptName,
+                    TradeName = ti.TradeName,
+                    Specs = ti.Specs,
+                    RetailPrice = ti.RetailPrice,
+                    WholesalePrice = ti.WholesalePrice,
+                    PurchasePrice = ti.PurchasePrice,
+                    PackUnit = ti.PackUnit,
+                    PackQty = ti.PackQty,
+                    MinUnit = ti.MinUnit,
+                    ProducerCode = c.FacCode,
+                    ProducerName = c.FacName,
+                    StoreNum = ti.StoreNum,
+                    StoreTotsum = ti.StoreTotsum,
+                    OutputSum = ti.OutputSum,
+                    PlanNum = ti.PlanNum,
+                    PlanEmpl = ti.PlanEmpl,
+                    PlanDate = ti.PlanDate,
+                    StockNum = ti.StockNum,
+                    StockEmpl = ti.StockEmpl,
+                    StockDate = ti.StockDate,
+                    ApproveEmpl = ti.ApproveEmpl,
+                    ApproveDate = ti.ApproveDate,
+                    StockNo = ti.StockNo,
+                    InName = id.InName,
+                    MixBuyPrice = id.MixBuyPrice,
+                    MixOutPrice = id.MixOutPrice,
+                    Tstars = id.Tstars,
+                }).ToList();
+            return response;
+        }
         /// <summary>
         /// 获取详情
         /// </summary>
@@ -44,6 +99,7 @@ namespace ZR.Service.Guiz
 
             return response;
         }
+
 
         /// <summary>
         /// 添加入库计划

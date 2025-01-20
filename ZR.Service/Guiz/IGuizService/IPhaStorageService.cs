@@ -18,9 +18,14 @@ namespace ZR.Service.Guiz.IGuizService
         int UpdatePhaStorage(PhaStorage parm);
 
         bool TruncatePhaStorage();
+        /// <returns></returns>
+        bool TruncatePhaStoragesss();
 
         (string, object, object) ImportPhaStorage(List<PhaStorage> list);
 
         PagedInfo<PhaStorageDto> ExportList(PhaStorageQueryDto parm);
+        List<PhaStorage> GetALL(string DeptCode);
+       decimal? GetALLme(string DeptCode);
+
     }
 }

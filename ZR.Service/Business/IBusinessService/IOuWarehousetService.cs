@@ -11,7 +11,7 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<OuWarehousetDto> GetList(OuWarehousetQueryDto parm);
 
         OuWarehouset GetInfo(int Id);
-
+        List<OuWarehouset> EList(int Id);
 
         OuWarehouset AddOuWarehouset(OuWarehouset parm);
         int UpdateOuWarehouset(OuWarehouset parm);

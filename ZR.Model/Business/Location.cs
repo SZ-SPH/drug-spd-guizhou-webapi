@@ -12,7 +12,9 @@ namespace ZR.Model.Business
         /// </summary>
         [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
         public int Id { get; set; }
+        public string Orderby { get; set; }
 
+        
         /// <summary>
         /// 货位号 
         /// </summary>

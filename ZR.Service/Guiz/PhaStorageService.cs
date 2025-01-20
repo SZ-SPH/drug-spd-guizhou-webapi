@@ -24,7 +24,15 @@ namespace ZR.Service.Guiz
             var predicate = QueryExp(parm);
 
             var response = Queryable()
+                .LeftJoin<Departments>((it,p)=>it.DrugDeptCode==p.DeptCode)
+                //.LeftJoin<GuiDrug>((it, p,s) => it.DrugCode == s.DrugTermId)
                 .Where(predicate.ToExpression())
+                .Where((it, p) => p.DeptName.Contains(parm.DrugDeptCode))
+                   .Select((it, p) => new PhaStorage
+                   {
+                       DrugDeptCode = p.DeptName,
+                       //DrugCode=s.TradeName
+                   },true)
                 .ToPage<PhaStorage, PhaStorageDto>(parm);
 
             return response;
@@ -79,6 +87,16 @@ namespace ZR.Service.Guiz
 
             return Truncate();
         }
+
+        public bool TruncatePhaStoragesss()
+        {
+            //var newTableName = $"PhaStorage_{DateTime.Now:yyyyMMdd}";
+            //if (Queryable().Any() && !Context.DbMaintenance.IsAnyTable(newTableName))
+            //{
+            //    Context.DbMaintenance.BackupTable("PhaStorage", newTableName);
+            //}
+            return Truncate();
+        }
         /// <summary>
         /// 导入库存
         /// </summary>
@@ -111,6 +129,23 @@ namespace ZR.Service.Guiz
 
             return (msg, x.ErrorList, x.IgnoreList);
         }
+        public List<PhaStorage> GetALL(string DeptCode)
+        {
+            var response = Queryable()
+               .Where(x => x.DrugDeptCode == DeptCode)
+               .ToList();
+
+            return response;
+        }
+        public decimal? GetALLme(string DeptCode)
+        {
+            var response = Queryable().LeftJoin<Departments>((it,p)=>p.DeptName==DeptCode)
+               .Where((it, p) => p.DeptName == DeptCode)
+                 .Sum((it, p) => it.StoreCost);
+
+            return response;
+        }
+
 
         /// <summary>
         /// 导出库存
@@ -140,7 +175,7 @@ namespace ZR.Service.Guiz
         {
             var predicate = Expressionable.Create<PhaStorage>();
 
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode == parm.DrugDeptCode);
+            //predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode == parm.DrugDeptCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), it => it.TradeName.Contains(parm.TradeName));
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugType), it => it.DrugType == parm.DrugType);

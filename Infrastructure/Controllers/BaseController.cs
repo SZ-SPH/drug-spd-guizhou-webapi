@@ -3,12 +3,14 @@ using Infrastructure.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using MiniExcelLibs;
+using MiniExcelLibs.OpenXml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using static System.Net.WebRequestMethods;
 
 namespace Infrastructure.Controllers
 {
@@ -177,6 +179,32 @@ namespace Infrastructure.Controllers
             return (sFileName, fullPath);
         }
 
+        protected (string, string) ExCod<T>(T list, string path, string fileName)
+        {
+           
+            IWebHostEnvironment webHostEnvironment = (IWebHostEnvironment)App.ServiceProvider.GetService(typeof(IWebHostEnvironment));
+            string sFileName = $"{fileName}{DateTime.Now:MM-dd-HHmmss}.xlsx";
+            string fullPath = Path.Combine(webHostEnvironment.WebRootPath, sFileName);
+            string pname = Path.Combine(webHostEnvironment.WebRootPath, path);
+
+            //不存在模板创建模板
+            if (!System.IO.File.Exists(pname))
+            {
+              throw new FileNotFoundException(pname+"不存在");
+            
+           }            
+            Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+            Directory.CreateDirectory(Path.GetDirectoryName(pname));
+
+            Console.WriteLine(pname);
+            Console.WriteLine(fullPath);
+            
+            MiniExcel.SaveAsByTemplate(fullPath, pname, list);
+            //MiniExcel.SaveAsByTemplateAsync(list, sheetName: sheetName);
+            return (sFileName, fullPath);
+            
+        }
+        
         /// <summary>
         /// 导出多个工作表(Sheet)
         /// </summary>

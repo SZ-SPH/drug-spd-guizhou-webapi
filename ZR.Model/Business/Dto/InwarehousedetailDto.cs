@@ -27,9 +27,9 @@ namespace ZR.Model.Business.Dto
     {
         [Required(ErrorMessage = "Id不能为空")]
         public int Id { get; set; }
-
+        public string Tstars { get; set; }
         public string DrugCode { get; set; }
-
+        public string ProductCode { get; set; }
         public int? InwarehouseQty { get; set; }
 
         public string Remark { get; set; }
@@ -57,10 +57,36 @@ namespace ZR.Model.Business.Dto
         public string ValiDate { get; set; }
 
         public string ProductDate { get; set; }
+
+        public decimal MixBuyPrice { get; set; }
+        /// <summary>
+        /// 最小单位零售价
+        /// </summary>
+        public decimal MixOutPrice { get; set; }
+        public string InName { get; set; }
     }
 
     public class InwarehousedetaiWithDruglDto
     {
+        public string ProductCode { get; set; }
+        public string Tstars { get; set; }
+        
+        public string BatchNo { get; set; }
+
+        public decimal MixBuyPrice { get; set; }
+        /// <summary>
+        /// 最小单位零售价
+        /// </summary>
+        public decimal MixOutPrice { get; set; }
+        public string InName { get; set; }
+        /// <summary>
+        /// 批文信息
+        /// </summary>
+        public string ApproveInfo { get; set; }
+
+        public string ValiDate { get; set; }
+
+        public string ProductDate { get; set; }
         public int Id { get; set; }
         public string DrugCode { get; set; }
         public int InwarehouseQty { get; set; }

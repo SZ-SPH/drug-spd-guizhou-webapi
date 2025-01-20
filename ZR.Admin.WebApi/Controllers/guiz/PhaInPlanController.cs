@@ -180,21 +180,26 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         {
             try
             {
-                PhaInPlanInQuery planInQuery = new PhaInPlanInQuery();
-                planInQuery.beginTime = new DateTime(2024, 12, 1);
-                planInQuery.endTime = DateTime.Now;
+                PhaInPlanInQuery planInQuery = new PhaInPlanInQuery
+                {
+                    beginTime = DateTime.Now.AddHours(-1).ToString("yyyy-M-d HH:mm:ss"), // 当前时间减去一小时并格式化
+                    endTime = DateTime.Now.AddHours(1).ToString("yyyy-M-d HH:mm:ss")      // 当前时间加上一小时并格式化
+                };
+
                 var x = await SendRequestsAsync(planInQuery);
                 foreach (var item in x)
                 {
                     var n = _PhaInPlanService.GetInfo(item.PlanNo);
                     if (n != null)
                     {
+                        item.Qty = 0;
                         var modal = item.Adapt<PhaInPlan>().ToUpdate(HttpContext);
                         var response = _PhaInPlanService.UpdatePhaInPlan(modal);
                     }
                     else if (n == null)
                     {
                         item.Status = "0";
+                        item.Qty = 0;
                         var modal = item.Adapt<PhaInPlan>().ToCreate(HttpContext);
                         var response = _PhaInPlanService.AddPhaInPlan(modal);
                     }

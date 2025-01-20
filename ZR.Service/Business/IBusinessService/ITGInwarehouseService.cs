@@ -11,7 +11,8 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<TGInwarehouseDto> GetList(TGInwarehouseQueryDto parm);
 
         TGInwarehouse GetInfo(string Id);
-
+        
+        int returnPush(int parm);
 
         TGInwarehouse AddTGInwarehouse(TGInwarehouse parm);
 
@@ -19,6 +20,6 @@ namespace ZR.Service.Business.IBusinessService
 
 
         PagedInfo<TGInwarehouseDto> ExportList(TGInwarehouseQueryDto parm);
-        object PushInwarehouseInfoToHis(TGInwarehouseQueryDto parm);
+        object PushInwarehouseInfoToHis(Push parm);
     }
 }

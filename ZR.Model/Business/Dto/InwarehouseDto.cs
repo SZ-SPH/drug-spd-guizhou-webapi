@@ -49,6 +49,8 @@ namespace ZR.Model.Business.Dto
         //采购计划单号
         public string BillCode { get; set; }
         public string PurchaseNum { get; set; }
+        public string inwarehouseArea { get; set; }
+
         public List<string> PlanNos { get; set; }
         public int StockNum { get; set; }
         public string BillTime { get; set; }
@@ -80,7 +82,7 @@ namespace ZR.Model.Business.Dto
 
         public int StockNum { get; set; }
 
-        public int PushStatu { get; set; }
+        public string PushStatu { get; set; }
         public string BillCode { get; set; }
         public string BillTime { get; set; }
         public string SupplierCode { get; set; }

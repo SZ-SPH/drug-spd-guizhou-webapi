@@ -14,8 +14,8 @@ namespace ZR.Model.GuiHis
     //入库
     public class PhaInPlanInQuery
     {
-        public DateTime beginTime { get; set; }
-        public DateTime endTime { get; set; }
+        public string beginTime { get; set; }
+        public string endTime { get; set; }
     }
 
     [SugarTable("PhaInPlan")]
@@ -23,9 +23,9 @@ namespace ZR.Model.GuiHis
     {
         [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
         public decimal PlanNo { get; set; } // 入库计划流水号
-        public string ApproveDate {  get; set; }
+        public string ApproveDate { get; set; }
         public string ApproveEmpl { get; set; }
-        public decimal StockNum {  get; set; }
+        public decimal StockNum { get; set; }
         public string BillCode { get; set; } // 采购单号
 
         public string State { get; set; } // 单据状态 0 计划单，1 采购单
@@ -80,6 +80,15 @@ namespace ZR.Model.GuiHis
 
         public string ExtendField { get; set; } // 扩展字段
         public string Status { get; set; } // 生成出库单 0未生成 1已生成
+        public string CompanyCode { get; set; } // 生成出库单 0未生成 1已生成
+        public string CompanyName { get; set; } // 生成出库单 0未生成 1已生成
+        public DateTime? EndDate { get; set; }
+        public decimal? Qty { get; set; }
+        public string ApproveInfo { get; set; }
+
+        
+        //        "companyCode": "2014",
+        //"companyName": "黔南神奇医药有限公司"
     }
 
 }

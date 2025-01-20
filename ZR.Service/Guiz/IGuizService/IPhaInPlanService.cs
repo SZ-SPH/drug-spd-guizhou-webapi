@@ -1,3 +1,5 @@
+using ZR.Model.Business;
+using ZR.Model.Business.Dto;
 using ZR.Model.GuiHis;
 using ZR.Model.GuiHis.Dto;
 namespace ZR.Service.Guiz.IGuizService
@@ -11,6 +13,7 @@ namespace ZR.Service.Guiz.IGuizService
 
         PhaInPlan GetInfo(decimal PlanNo);
 
+         List<InwarehousedetaiWithDruglDto> GetInfos(Inwarehousedetail parm);
 
         PhaInPlan AddPhaInPlan(PhaInPlan parm);
         int UpdatePhaInPlan(PhaInPlan parm);

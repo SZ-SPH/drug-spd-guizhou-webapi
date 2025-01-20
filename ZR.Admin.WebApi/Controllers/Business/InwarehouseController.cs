@@ -3,6 +3,7 @@ using ZR.Model.Business.Dto;
 using ZR.Model.Business;
 using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
+using ZR.Service.Business;
 
 //创建时间：2024-12-10
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -92,9 +93,28 @@ namespace ZR.Admin.WebApi.Controllers.Business
         [ActionPermissionFilter(Permission = "inwarehouse:delete")]
         [Log(Title = "入库主单", BusinessType = BusinessType.DELETE)]
         public IActionResult DeleteInwarehouse([FromRoute]string ids)
-        {
-            int res = _InwarehouseService.DeleteInwarehouse(ids);
-            return SUCCESS(res != -1 ? "处理成功" : "处理失败");
+        {  
+            var idArr = Tools.SplitAndConvert<int>(ids);
+            string num = "";
+            foreach (var id in idArr) { 
+                string res = _InwarehouseService.DeleteInwarehouse(id);
+                if (res == "成功")
+                {                   
+                }
+                else
+                {
+                    num = num + "," + res;
+                }
+            }
+            if (num=="")
+            {
+                return SUCCESS("处理成功");
+            }
+            else
+            {
+                return SUCCESS(num);
+
+            }
         }
 
     }

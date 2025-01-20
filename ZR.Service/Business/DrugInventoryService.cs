@@ -9,30 +9,33 @@ using ZR.Model.GuiHis;
 namespace ZR.Service.Business
 {
     /// <summary>
-    /// 出库药品详情Service业务层处理
+    /// 采购退货Service业务层处理
     /// </summary>
-    [AppService(ServiceType = typeof(IOuWarehousetService), ServiceLifetime = LifeTime.Transient)]
-    public class OuWarehousetService : BaseService<OuWarehouset>, IOuWarehousetService
+    [AppService(ServiceType = typeof(IDrugInventoryService), ServiceLifetime = LifeTime.Transient)]
+    public class DrugInventoryService : BaseService<DrugInventory>, IDrugInventoryService
     {
         /// <summary>
-        /// 查询出库药品详情列表
+        /// 查询采购退货列表
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<OuWarehousetDto> GetList(OuWarehousetQueryDto parm)
+        public PagedInfo<DrugInventoryDto> GetList(DrugInventoryQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
-            var response = Queryable()
-                .LeftJoin<Departments>((it, p) => it.DrugDeptCode == p.DeptCode)
-                .LeftJoin<Departments>((it, p,s) => it.DrugStorageCode == s.DeptCode)
+            var response = Queryable().LeftJoin<Departments>((it, o)=> it.DrugDeptCode==o.DeptCode)
+                .LeftJoin<CompanyInfo>((it, o,p)=> it.CompanyCode==p.FacCode)
                 .Where(predicate.ToExpression())
-                .Select((it, p, s)=>new OuWarehouset
-                {
-                    DrugDeptCode = p.DeptName,
-                    DrugStorageCode=s.DeptName
-                },true)
-                .ToPage<OuWarehouset, OuWarehousetDto>(parm);
+                .Where((it, o, p) => string.IsNullOrEmpty(parm.DrugDeptName) || o.DeptName.Contains(parm.DrugDeptName.Trim()))
+                .Where((it, o, p) => string.IsNullOrEmpty(parm.CompanyName) || p.FacName.Contains(parm.CompanyName.Trim()))
+                .Select((it, o, p) =>
+                 new DrugInventoryDto{
+                   InBillCode = it.InBillCode.SelectAll(),
+                   DrugDeptName = o.DeptName,
+                   CompanyName = p.FacName,
+                })
+                .OrderBy(it => it.ApplyDate, OrderByType.Desc)
+                .ToPage(parm);
 
             return response;
         }
@@ -42,55 +45,55 @@ namespace ZR.Service.Business
         /// 获取详情
         /// </summary>
         /// <param name="Id"></param>
-        /// <returns></returns>
-        public OuWarehouset GetInfo(int Id)
+        /// <returns></returns>········
+        public DrugInventory GetInfo(int Id)
         {
             var response = Queryable()
-                .Where(x => x.Id == Id)
+                //.Where(x => x.Id == Id)
                 .First();
 
             return response;
         }
 
         /// <summary>
-        /// 添加出库药品详情
+        /// 添加采购退货
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public OuWarehouset AddOuWarehouset(OuWarehouset model)
+        public DrugInventory AddDrugInventory(DrugInventory model)
         {
             return Insertable(model).ExecuteReturnEntity();
         }
 
         /// <summary>
-        /// 修改出库药品详情
+        /// 修改采购退货
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public int UpdateOuWarehouset(OuWarehouset model)
+        public int UpdateDrugInventory(DrugInventory model)
         {
             return Update(model, true);
         }
 
         /// <summary>
-        /// 清空出库药品详情
+        /// 清空采购退货
         /// </summary>
         /// <returns></returns>
-        public bool TruncateOuWarehouset()
+        public bool TruncateDrugInventory()
         {
-            var newTableName = $"OuWarehouset_{DateTime.Now:yyyyMMdd}";
+            var newTableName = $"DrugInventory_{DateTime.Now:yyyyMMdd}";
             if (Queryable().Any() && !Context.DbMaintenance.IsAnyTable(newTableName))
             {
-                Context.DbMaintenance.BackupTable("OuWarehouset", newTableName);
+                Context.DbMaintenance.BackupTable("DrugInventory", newTableName);
             }
             
             return Truncate();
         }
         /// <summary>
-        /// 导入出库药品详情
+        /// 导入采购退货
         /// </summary>
         /// <returns></returns>
-        public (string, object, object) ImportOuWarehouset(List<OuWarehouset> list)
+        public (string, object, object) ImportDrugInventory(List<DrugInventory> list)
         {
             var x = Context.Storageable(list)
                 .SplitInsert(it => !it.Any())
@@ -115,49 +118,34 @@ namespace ZR.Service.Business
         }
 
         /// <summary>
-        /// 导出出库药品详情
+        /// 导出采购退货
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<OuWarehousetDto> ExportList(OuWarehousetQueryDto parm)
+        public PagedInfo<DrugInventoryDto> ExportList(DrugInventoryQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
                 .Where(predicate.ToExpression())
-                .Select((it) => new OuWarehousetDto()
+                .Select((it) => new DrugInventoryDto()
                 {
                 }, true)
                 .ToPage(parm);
 
             return response;
         }
-        public List<OuWarehouset> EList(int parm)
-        {
-            //var predicate = QueryExp(parm);
 
-            var response = Queryable().LeftJoin<CompanyInfo>((it,p)=>it.ProducerCode==p.FacCode)
-                .Where(it => it.OutorderID == parm).Select((it,p)=>new OuWarehouset()
-                {
-                    ProducerCode=p.FacName
-                },true).ToList();
-            return response;
-        }
         /// <summary>
         /// 查询导出表达式
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        private static Expressionable<OuWarehouset> QueryExp(OuWarehousetQueryDto parm)
+        private static Expressionable<DrugInventory> QueryExp(DrugInventoryQueryDto parm)
         {
-            var predicate = Expressionable.Create<OuWarehouset>();
+            var predicate = Expressionable.Create<DrugInventory>();
 
-            predicate = predicate.AndIF(parm.OutorderID != null, it => it.OutorderID == parm.OutorderID);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode == parm.DrugDeptCode);
-            predicate = predicate.AndIF(parm.OutBillCode != null, it => it.OutBillCode == parm.OutBillCode);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.GroupCode), it => it.GroupCode == parm.GroupCode);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), it => it.TradeName == parm.TradeName);
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugName), it => it.TradeName.Contains(parm.DrugName.Trim()));
             return predicate;
         }
     }

@@ -13,8 +13,8 @@ namespace ZR.Model.GuiHis
     //出库
     public class PhaOutInQuery
     {
-        public DateTime beginTime { get; set; }
-        public DateTime endTime { get; set; }
+        public string beginTime { get; set; }
+        public string endTime { get; set; }
     }
     /// <summary>
     /// 出库记录
@@ -42,10 +42,12 @@ namespace ZR.Model.GuiHis
         [SugarColumn(ColumnName = "serialCode")]
         public int SerialCode { get; set; }
 
+        
         /// <summary>
         /// 批次号
         /// </summary>
-        [SugarColumn(ColumnName = "groupCode")]
+        //[SugarColumn(ColumnName = "groupCode")]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
         public string GroupCode { get; set; }
 
         /// <summary>
@@ -637,5 +639,8 @@ namespace ZR.Model.GuiHis
         [ExcelColumn(Name = "出库类型")]
         public string OutTypeLabel { get; set; }
     }
+
+
+ 
 }
 

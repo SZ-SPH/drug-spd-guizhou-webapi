@@ -11,7 +11,8 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<InwarehousedetaiWithDruglDto> GetList(InwarehousedetailQueryDto parm);
 
         Inwarehousedetail GetInfo(int Id);
-
+        List<InwarehousedetaiWithDruglDto> GetInfos(int Id);
+  
 
         Inwarehousedetail AddInwarehousedetail(Inwarehousedetail parm);
         int UpdateInwarehousedetail(Inwarehousedetail parm);

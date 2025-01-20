@@ -1,4 +1,6 @@
 
+using System.Drawing.Drawing2D;
+
 namespace ZR.Model.Business
 {
     /// <summary>
@@ -23,6 +25,7 @@ namespace ZR.Model.Business
         /// 采购单号 
         /// </summary>
         public string BillCode { get; set; }
+        public string ApproveInfo { get; set; }
 
         /// <summary>
         /// 单据状态 0 计划单，1 采购单 
@@ -183,6 +186,37 @@ namespace ZR.Model.Business
         /// 状态 0 未生成出库单 1 已生成出库单 2 已推送
         /// </summary>
         public string Status { get; set; }
+        public decimal? Qty { get; set; }
+        public string CompanyCode { get; set; } // 生成出库单 0未生成 1已生成
+        public string CompanyName { get; set; } // 生成出库单 0未生成 1已生成
+        public DateTime? EndDate { get; set; } // 生成出库单 0未生成 1已生成
+
+
+    }
+
+
+    public class reqIn
+    {
+        //public DateTime beginTime {  get; set; }
+        //public DateTime endTime { get; set; }
+        public string drugDeptCode { get; set; }
+        public string drugCode { get; set; }
+        public string companyCode { get; set; }
+        public string planNo { get; set; }
+        public string billCode { get; set; }
+    }
+
+   public class resPutList
+    {
+        public string drugDeptCode {  get; set; }
+        public string inBillCode { get; set; }
+        public string billCode { get; set; }
+        public string groupCode { get; set; }
+        public string inListCode { get; set; }
+        public string drugCode { get; set; }
+        public string batchNo { get; set; }
+        public string planNo { get; set; }
+        public string operDate { get; set; }
 
     }
 }

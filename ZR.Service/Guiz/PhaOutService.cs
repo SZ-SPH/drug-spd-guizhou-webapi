@@ -25,7 +25,7 @@ namespace ZR.Service.Guiz
         public PagedInfo<PhaOutDto> GetList(PhaOutQueryDto parm)
         {
 
-            var predicate = QueryExp(parm);
+            var predicate = QueryExps(parm);
     
                         var response = Queryable()
                 .LeftJoin<Departments>((p, d1) => p.DrugDeptCode == d1.DeptCode)
@@ -38,23 +38,31 @@ namespace ZR.Service.Guiz
                     OutBillCode = p.OutBillCode.SelectAll(),
                     DrugDeptName = d1.DeptName,
                     DrugStorageName = d2.DeptName,
-                })
+                }).OrderBy(p=>p.ApplyDate,OrderByType.Desc)
                 .ToPage(parm);
     
             return response;
         }
 
-    //多表查询存在别名不一致,请把Where中的it改成p就可以了，特殊需求可以使用.Select((x, y)=>new{ id=x.id,name=y.name
-    //}).MergeTable().Orderby(xxx=>xxx.Id)功能将Select中的多表结果集变成单表，这样就可以不限制别名一样
+
         /// <summary>
         /// 获取详情
         /// </summary>
         /// <param name="outBillCode"></param>
+       
         /// <returns></returns>
         public PhaOut GetInfo(long outBillCode)
         {
             var response = Queryable()
                 .Where(x => x.OutBillCode == outBillCode)
+                .First();
+
+            return response;
+        }
+        public PhaOut GetInfo(long outBillCode, string groupcode)
+        {
+            var response = Queryable()
+                .Where(x => x.OutBillCode == outBillCode && x.GroupCode == groupcode)             
                 .First();
 
             return response;
@@ -168,9 +176,9 @@ namespace ZR.Service.Guiz
             return predicate;
         }
 
-        private static Expressionable<PhaOutDto> QueryExps(PhaOutQueryDto parm)
+        private static Expressionable<PhaOut> QueryExps(PhaOutQueryDto parm)
         {
-            var predicate = Expressionable.Create<PhaOutDto>();
+            var predicate = Expressionable.Create<PhaOut>();
 
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), p => p.DrugDeptCode == parm.DrugDeptCode);
             predicate = predicate.AndIF(parm.OutBillCode != null, p => p.OutBillCode == parm.OutBillCode);

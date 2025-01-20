@@ -10,6 +10,7 @@ using System.Text;
 using ZR.Service.Guiz;
 using MySqlConnector;
 using System.Net.Http;
+using Org.BouncyCastle.Asn1.Mozilla;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -186,7 +187,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
            
             try
             {             
-                _PhaStorageService.TruncatePhaStorage();
+                _PhaStorageService.TruncatePhaStoragesss();
                 var departments = _DepartmentsService.GetAll();
                 foreach (var item in departments)
                 {
@@ -271,6 +272,27 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             }
         }
 
+
+        [HttpGet("allprice")]
+        public IActionResult allprice([FromQuery]string code)
+        {
+            //reqAllprice reqAllprice = new reqAllprice();            
+            if (string.IsNullOrEmpty(code))
+            {
+                return SUCCESS(0);
+            }
+            var list= _PhaStorageService.GetALLme(code);
+ 
+
+            return SUCCESS(list);
+
+
+        }
+        public class reqAllprice
+        {
+            public decimal? Buyprice;
+            public decimal? OutPrice;
+        }
 
 
     }

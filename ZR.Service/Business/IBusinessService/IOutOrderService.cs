@@ -1,5 +1,6 @@
 using ZR.Model.Business.Dto;
 using ZR.Model.Business;
+using static ZR.Service.Business.OutOrderService;
 
 namespace ZR.Service.Business.IBusinessService
 {
@@ -9,8 +10,12 @@ namespace ZR.Service.Business.IBusinessService
     public interface IOutOrderService : IBaseService<OutOrder>
     {
         PagedInfo<OutOrderDto> GetList(OutOrderQueryDto parm);
-
+        OutOrderDto GetInfos(int Id);
+        OutOrderDto GetInfoss(int Id);
+        
         OutOrder GetInfo(int Id);
+      string Byin(string zhi);
+        string Byout(string zhi);
 
 
         OutOrder AddOutOrder(OutOrder parm);
@@ -21,5 +26,6 @@ namespace ZR.Service.Business.IBusinessService
         (string, object, object) ImportOutOrder(List<OutOrder> list);
 
         PagedInfo<OutOrderDto> ExportList(OutOrderQueryDto parm);
+   
     }
 }

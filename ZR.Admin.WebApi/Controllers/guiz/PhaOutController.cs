@@ -60,11 +60,11 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         /// </summary>
         /// <param name="outBillCode"></param>
         /// <returns></returns>
-        [HttpGet("{outBillCode}")]
+        [HttpGet("{outBillCode}/{gr}")]
         [ActionPermissionFilter(Permission = "phaout:query")]
-        public IActionResult GetPhaOut(long outBillCode)
+        public IActionResult GetPhaOut(long outBillCode,string gr)
         {
-            var response = _PhaOutService.GetInfo(outBillCode);
+            var response = _PhaOutService.GetInfo(outBillCode,gr);
 
             var info = response.Adapt<PhaOutDto>();
             return SUCCESS(info);
@@ -86,7 +86,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             foreach (var item in phaOuts)
             {
                 // 创建唯一的出库单标识
-                string orderKey = $"{item.DrugDeptCode}-{item.DrugStorageCode}";
+                string orderKey = $"{item.DrugDeptCode}-{item.DrugStorageCode}-{item.OutType}";
                 //OutOrder currentOrder = new OutOrder();
                 // 检查是否已经存在相同的出库单
                 if (!processedOrders.ContainsKey(orderKey))
@@ -97,9 +97,10 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                         OutOrderCode = GenerateUniqueOutOrderCode(), // 生成唯一的出库单代码
                         OutWarehouseID = item.DrugDeptCode,
                         UseReceive = item.GetPerson,
-                        //OutBillCode = item.OutBillCode,
+                        OutBillCode =100,
                         InpharmacyId = item.DrugStorageCode,
                         Times = DateTime.Now
+                        ,Type=item.OutType,
                     };
                     var modal = outOrder.Adapt<OutOrder>().ToCreate(HttpContext);
                     currentOrder = _OutOrderService.AddOutOrder(modal);
@@ -277,65 +278,68 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         {
             try
             {
-                PhaOutInQuery phaOutInQuery = new PhaOutInQuery();
-                phaOutInQuery.beginTime = new DateTime(2024, 12, 1);
-                phaOutInQuery.endTime = DateTime.Now;
+                PhaOutInQuery phaOutInQuery = new PhaOutInQuery
+                {
+                    beginTime = DateTime.Now.AddHours(-1).ToString("yyyy-M-d HH:mm:ss"), // 当前时间减去一小时并格式化
+                    endTime = DateTime.Now.AddHours(1).ToString("yyyy-M-d HH:mm:ss")      // 当前时间加上一小时并格式化
+                };
+
                 var x = await SendRequestsAsync(phaOutInQuery);
+
+                // 检查 x 是否为 null
+                if (x == null || !x.Any())
+                {
+                    return BadRequest("未获取到数据");
+                }
 
                 foreach (var item in x)
                 {
-                    var nu = _PhaOutService.GetInfo(item.OutBillCode);
+                    if (item == null) // 检查 item 是否为 null
+                    {
+                        continue; // 跳过 null 项
+                    }
+
+                    var nu = _PhaOutService.GetInfo(item.OutBillCode, item.GroupCode);
                     if (nu != null)
                     {
                         var modal = item.Adapt<PhaOut>().ToUpdate(HttpContext);
                         _PhaOutService.UpdatePhaOut(modal);
                     }
-                    else if (nu == null)
+                    else
                     {
                         var modal = item.Adapt<PhaOut>().ToCreate(HttpContext);
-                        _PhaOutService.UpdatePhaOut(modal);
+                        _PhaOutService.AddPhaOut(modal);
                     }
                 }
                 return SUCCESS("true");
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                // 记录异常信息
+                // 可以使用日志记录工具记录 ex.Message 和 ex.StackTrace
+                return StatusCode(500, $"服务器内部错误: {ex.Message}");
             }
-
-
         }
+
         private async Task<List<PhaOut>> SendRequestsAsync(PhaOutInQuery phaOutInQuery)
         {
             using (var client = new HttpClient())
             {
-                //http://192.168.2.21:9403/His/GetPhaInPlanList
-
-
                 string url = $"http://192.168.2.21:9403/His/GetPhaOutList?beginTime={phaOutInQuery.beginTime:yyyy-MM-dd}&endTime={phaOutInQuery.endTime:yyyy-MM-dd}";
 
-                // 发送 GET 请求
                 HttpResponseMessage response = await client.GetAsync(url);
-                //string url = "http://192.168.2.21:9403/His/GetPhaOutList";
-                //var json = JsonConvert.SerializeObject(phaOutInQuery);
-                //var content = new StringContent(json, Encoding.UTF8, "application/json");
-                //HttpResponseMessage response = await client.PostAsync(url, content);
-                // 获取响应内容
                 var responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
-                    // 解析 JSON 响应
                     var apiResponse = JsonConvert.DeserializeObject<List<PhaOut>>(responseContent);
-                    return apiResponse; // 返回 ApiResponse 对象
+                    return apiResponse ?? new List<PhaOut>(); // 确保返回一个空列表而不是 null
                 }
                 else
                 {
-                    // 处理错误
                     throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
                 }
             }
         }
-
 
 
 
