@@ -220,7 +220,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                 //var json = JsonConvert.SerializeObject(requests);
                 //var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                string url = $"http://192.168.2.21:9403/His/GetPhaInPlanList?beginTime={requests.beginTime:yyyy-MM-dd}&endTime={requests.endTime:yyyy-MM-dd}";
+                string url = $"http://192.168.1.95:7800/His/GetPhaInPlanList?beginTime={requests.beginTime:yyyy-MM-dd}&endTime={requests.endTime:yyyy-MM-dd}";
 
                 // 发送 GET 请求
                 HttpResponseMessage response = await client.GetAsync(url);

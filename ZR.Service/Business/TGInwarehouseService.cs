@@ -97,7 +97,6 @@ namespace ZR.Service.Business
             //按照采购单号分组推送
             int n = 0;
             var username = HttpContextExtension.GetName(App.HttpContext);
-
             List<Inwarehouse> iwarehouseList = Context.Queryable<Inwarehouse>().Where(it => parm.BillCodes.Contains(it.InwarehouseNum)).ToList();
           
             foreach (var inwarehouseListItem in iwarehouseList)
@@ -110,7 +109,7 @@ namespace ZR.Service.Business
                 List<InwarhouseHisDTO> pushHisList = new List<InwarhouseHisDTO>();
                 pushHisList.Clear();
                 int serialNum = 1;
-
+                DateTime dateTime = DateTime.Now;
                 foreach (var group in inwarehouseDetailList)
                 {
 
@@ -119,6 +118,7 @@ namespace ZR.Service.Business
                     .LeftJoin<Inwarehouse>((id, ti, i) => i.Id == id.InwarehouseId).Where(id => id.Id == group.Id)
                    .Select((id, ti, i) => new InwarhouseDetailDTO
                    {
+                       spdInputId=i.Id.ToString(),
                        PlanNo = (ti.PlanNo),
                        BillCode = ti.BillCode,
                        StockNo = ti.StockNo,
@@ -156,7 +156,7 @@ namespace ZR.Service.Business
                        ApproveOperCode = "",
                        ApproveDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                        OperCode = username,
-                       OperDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                       OperDate = dateTime.ToString("yyyy-MM-dd HH:mm:ss"),
                        Mark = ti.Mark,
                        PurcharsePriceFirsttime = decimal.Parse(ti.PurchasePrice),
                        IsTenderOffer = "0",
@@ -173,6 +173,7 @@ namespace ZR.Service.Business
                    })
                     .Single();
                     InwarhouseHisDTO HisDTO = new InwarhouseHisDTO();
+                    HisDTO.spdInputId=PlanNoCorrespondingItem.spdInputId;
                     HisDTO.extCode1 = PlanNoCorrespondingItem.ExtCode1;
                     HisDTO.planNo = PlanNoCorrespondingItem.PlanNo;
                     HisDTO.mark = PlanNoCorrespondingItem.Mark;
@@ -235,7 +236,7 @@ namespace ZR.Service.Business
                         continue;
                     }
                     else if (DateTime.Parse(HisDTO.validDate) < DateTime.Now.Date)
-                        {
+                        { 
                             //输出错误信息
                             Context.Updateable<Inwarehousedetail>().SetColumns(it => new Inwarehousedetail()
                             {
@@ -255,7 +256,7 @@ namespace ZR.Service.Business
 
 
                 }
-                string postUrl = $"http://192.168.2.21:9403/His/PhaInput";
+                string postUrl = $"http://192.168.1.95:7800/His/PhaInput";
                 using (var http = new HttpClient())
                 {
                     var jsonData = JsonConvert.SerializeObject(pushHisList);
@@ -266,10 +267,11 @@ namespace ZR.Service.Business
                     string responseBody = response.Content.ReadAsStringAsync().Result;
                     var responseDTO = JsonConvert.DeserializeObject<InwarhouseHisResponseDTO>(responseBody);
                     if ("0".Equals(responseDTO.Code))
-                    {
+                    {                     
                         Context.Updateable<Inwarehouse>().SetColumns(it => new Inwarehouse()
                         {
-                            PushStatu = "已推送"
+                            PushStatu = "已推送",
+                            PushTime = dateTime
                         }).Where(it => it.Id == inwarehouseListItem.Id).ExecuteCommand();
                         n++;
                         Context.Updateable<Inwarehousedetail>().SetColumns(it => new Inwarehousedetail()
@@ -411,7 +413,7 @@ namespace ZR.Service.Business
                 HisDTO.invoiceDate = PlanNoCorrespondingItem.InvoiceDate;
                 HisDTO.invoiceNo = PlanNoCorrespondingItem.InvoiceNo;
                 pushHisList.Add(HisDTO);
-                string postUrl = $"http://192.168.2.21:9403/His/PhaInput";
+                string postUrl = $"http://192.168.1.95:7800/His/PhaInput";
                 //var jsonData = JsonConvert.SerializeObject(pushHisList);
                 //var response = PostData(postUrl, pushHisList);
                 var f = new InwarhouseHisResponseDTO();

@@ -11,6 +11,7 @@ using ZR.Service.Guiz;
 using MySqlConnector;
 using System.Net.Http;
 using Org.BouncyCastle.Asn1.Mozilla;
+using System.Threading.Tasks;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -124,14 +125,48 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         {
             parm.PageNum = 1;
             parm.PageSize = 100000;
-            var list = _PhaStorageService.ExportList(parm).Result;
+            var list = _PhaStorageService.exGetList(parm).Result;
             if (list == null || list.Count <= 0)
             {
+                
                 return ToResponse(ResultCode.FAIL, "没有要导出的数据");
+            
+
+
+
             }
+            
             var result = ExportExcelMini(list, "库存", "库存");
+            
+            
             return ExportExcel(result.Item2, result.Item1);
+
+
+
+
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// 清空库存
@@ -181,14 +216,21 @@ namespace ZR.Admin.WebApi.Controllers.Gui
             return ExportExcel(result.Item2, result.Item1);
         }
 
+
+
+
+
+
+
         [HttpPost("TongBu")]
         public async Task<IActionResult> TongBu()
         {
-           
             try
-            {             
+            {
                 _PhaStorageService.TruncatePhaStoragesss();
                 var departments = _DepartmentsService.GetAll();
+                int num = 0;
+                List<PhaStorage> list = new();
                 foreach (var item in departments)
                 {
                     int drugDeptCode;
@@ -199,17 +241,17 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     reqPhaStorage x = await SendRequestsAsync(drugDeptCode);
                     if (x == null || x.data == null)
                     {
-                        continue; 
+                        continue;
                     }
-                    foreach (var items in x.data)
+                    else
                     {
-                        if (items != null)
-                        {
-                            var modal = items.Adapt<PhaStorage>().ToCreate(HttpContext);
-                            _PhaStorageService.AddPhaStorage(modal);
-                        }                      
+                        list.AddRange(x.data);
                     }
                 }
+                if (list.Count > 0) 
+                {
+                    num=_PhaStorageService.MIXAddPhaStorage(list);
+                 }
                 return SUCCESS("true");
             }
             catch (Exception ex)
@@ -223,6 +265,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         {
             using (var client = new HttpClient())
             {
+                client.Timeout = TimeSpan.FromMinutes(60);
                 // 构建 URL，包括查询参数
                 string url = $"http://192.168.2.21:9403/His/GetPhaStorage?drugDeptCode={PhaStorageInQuery}";
                 // 将对象序列化为 JSON
@@ -233,45 +276,15 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                 var responseContent = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(responseContent); // 输出响应内容
                 if (response.IsSuccessStatusCode)
-                {
+                {             
                     return JsonConvert.DeserializeObject<reqPhaStorage>(responseContent);
                 }
                 else
                 {
                     throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
                 }
-            }
+            }           
         }
-        [HttpPost("iiim")]
-        public async Task<reqPhaStorage> iiim(PhaStorageInQuery PhaStorageInQuery)
-        {
-            using (var client = new HttpClient())
-            {
-                // 构建 URL，包括查询参数
-                string url = $"http://192.168.2.21:9403/His/GetPhaStorage?drugDeptCode=6052";
-
-                // 将对象序列化为 JSON
-                var json = JsonConvert.SerializeObject(null);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                // 发送 POST 请求
-                HttpResponseMessage response = await client.PostAsync(url, content);
-                var responseContent = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    if (string.IsNullOrEmpty(responseContent))
-                    {
-                        Console.WriteLine("响应内容为空");
-                        return null;
-                    }
-                    return JsonConvert.DeserializeObject<reqPhaStorage>(responseContent);
-                }
-                else
-                {
-                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
-                }
-            }
-        }
-
 
         [HttpGet("allprice")]
         public IActionResult allprice([FromQuery]string code)

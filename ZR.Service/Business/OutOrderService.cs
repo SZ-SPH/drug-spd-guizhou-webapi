@@ -31,7 +31,8 @@ namespace ZR.Service.Business
                  predicate = QueryExp(parm);
                  response = Queryable()
                .LeftJoin<Departments>((it, d1) => it.InpharmacyId == d1.DeptCode)
-               .LeftJoin<Departments>((it, d1, d2) => it.OutWarehouseID == d2.DeptCode).Where(predicate.ToExpression())               
+               .LeftJoin<Departments>((it, d1, d2) => it.OutWarehouseID == d2.DeptCode).Where(predicate.ToExpression())
+                .OrderByDescending((it) => it.CreateTime)
                .Select((it, d1, d2) => new OutOrderDto
                {
                    Id = it.Id.SelectAll(),
@@ -48,6 +49,7 @@ namespace ZR.Service.Business
               .LeftJoin<Departments>((it, d1, d2) => it.OutWarehouseID == d2.DeptCode).Where(predicate.ToExpression())
               .Where((it, d1, d2)=> string.IsNullOrEmpty(parm.compname)||d1.FacName.Contains(parm.compname.Trim()))
               .Where((it, d1, d2) => string.IsNullOrEmpty(parm.deptname) || d2.DeptName.Contains(parm.deptname.Trim()))
+              .OrderByDescending((it) => it.CreateTime)
               .Select((it, d1, d2) => new OutOrderDto
               {
                   Id = it.Id.SelectAll(),
@@ -276,6 +278,8 @@ namespace ZR.Service.Business
                         new outList { 名称 = "内部入库退货申请", 类型值 = "18" },
                         new outList { 名称 = "出库退库", 类型值 = "22" },
                         new outList { 名称 = "出库退货", 类型值 = "22" },
+                        new outList { 名称 = "一般出库", 类型值 = "21" },
+                        new outList { 名称 = "一般出库", 类型值 = "01" },
                         new outList { 名称 = "出库审批", 类型值 = "25" },
                         new outList { 名称 = "特别出库", 类型值 = "33" }
                     };

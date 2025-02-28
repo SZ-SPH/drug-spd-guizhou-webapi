@@ -9,12 +9,16 @@ namespace ZR.Service.Guiz.IGuizService
     public interface IPhaStorageService : IBaseService<PhaStorage>
     {
         PagedInfo<PhaStorageDto> GetList(PhaStorageQueryDto parm);
+        PagedInfo<PhaStorageDtos> exGetList(PhaStorageQueryDto parm);
 
+        
         PhaStorage GetInfo(int Id);
         PhaStorage GetisInfo(string DrugCode, string DeptCode);
 
 
         PhaStorage AddPhaStorage(PhaStorage parm);
+        int MIXAddPhaStorage(List<PhaStorage> parm);
+
         int UpdatePhaStorage(PhaStorage parm);
 
         bool TruncatePhaStorage();

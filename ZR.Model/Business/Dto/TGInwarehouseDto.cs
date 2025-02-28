@@ -40,6 +40,8 @@ namespace ZR.Model.Business.Dto
     }
     public class InwarhouseDetailDTO
     {
+        public string spdInputId { get; set; } // 入库计划流水号
+        
         public int PlanNo { get; set; } // 入库计划流水号
         public string BillCode { get; set; } // 采购单号
         public string StockNo { get; set; } // 采购流水号
@@ -107,6 +109,9 @@ namespace ZR.Model.Business.Dto
 
     public class InwarhouseHisDTO
     {
+        
+        public string spdInputId { get; set; } // 入库计划流水号
+
         public int planNo { get; set; } // 入库计划流水号
         public string billCode { get; set; } // 采购单号
         public string stockNo { get; set; } // 采购流水号

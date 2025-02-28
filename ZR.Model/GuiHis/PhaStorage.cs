@@ -47,6 +47,9 @@ namespace ZR.Model.GuiHis
         public string GroupCode { get; set; }
         public string BatchNo { get; set; }
         public string ProducerCode { get; set; }
+
+        public decimal Purchaseprice { get; set; }
+        public decimal WholesalePrice { get; set; }
     }
 
     public class reqPhaStorage

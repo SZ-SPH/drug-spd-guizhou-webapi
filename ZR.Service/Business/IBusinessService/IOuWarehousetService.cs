@@ -20,6 +20,6 @@ namespace ZR.Service.Business.IBusinessService
 
         (string, object, object) ImportOuWarehouset(List<OuWarehouset> list);
 
-        PagedInfo<OuWarehousetDto> ExportList(OuWarehousetQueryDto parm);
+        PagedInfo<OuWarehousetDtos> ExportList(OuWarehousetQueryDto parm);
     }
 }

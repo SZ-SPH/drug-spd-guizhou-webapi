@@ -46,7 +46,10 @@ namespace ZR.Repository
         {
             return Context.Insertable(t).IgnoreColumns(ignoreNullColumn: ignoreNull).ExecuteCommand();
         }
-
+        public int MixAdd(List<T> t)
+        {
+            return Context.Fastest<T>().BulkCopy(t);//插入;
+        }
         public int Insert(List<T> t)
         {
             return InsertRange(t) ? 1 : 0;

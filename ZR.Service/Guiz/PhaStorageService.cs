@@ -24,20 +24,45 @@ namespace ZR.Service.Guiz
             var predicate = QueryExp(parm);
 
             var response = Queryable()
-                .LeftJoin<Departments>((it,p)=>it.DrugDeptCode==p.DeptCode)
+                .LeftJoin<Departments>((it, p) => it.DrugDeptCode == p.DeptCode)
+                .LeftJoin<CompanyInfo>((it,p,s)=>it.ProducerCode==s.FacCode)
                 //.LeftJoin<GuiDrug>((it, p,s) => it.DrugCode == s.DrugTermId)
                 .Where(predicate.ToExpression())
-                .Where((it, p) => p.DeptName.Contains(parm.DrugDeptCode))
-                   .Select((it, p) => new PhaStorage
+                .Where((it, p) => string.IsNullOrEmpty(parm.DrugDeptCode)|| p.DeptName.Contains(parm.DrugDeptCode))
+                .Where((it, p,s) => string.IsNullOrEmpty(parm.ProducerCode) || s.FacName.Contains(parm.ProducerCode))
+
+                .Select((it, p,s) => new PhaStorage
                    {
+                      StoreSum=it.StoreSum/it.PackQty,
                        DrugDeptCode = p.DeptName,
+                       ProducerCode=s.FacName
                        //DrugCode=s.TradeName
                    },true)
                 .ToPage<PhaStorage, PhaStorageDto>(parm);
 
             return response;
         }
+        public PagedInfo<PhaStorageDtos> exGetList(PhaStorageQueryDto parm)
+        {
+            var predicate = QueryExp(parm);
 
+            var response = Queryable()
+                .LeftJoin<Departments>((it, p) => it.DrugDeptCode == p.DeptCode)
+                .LeftJoin<CompanyInfo>((it, p, s) => it.ProducerCode == s.FacCode)
+                //.LeftJoin<GuiDrug>((it, p,s) => it.DrugCode == s.DrugTermId)
+                .Where(predicate.ToExpression())
+                .Where((it, p) => string.IsNullOrEmpty(parm.DrugDeptCode) || p.DeptName.Contains(parm.DrugDeptCode))
+                   .Where((it, p, s) => string.IsNullOrEmpty(parm.ProducerCode) || s.FacName.Contains(parm.ProducerCode))
+                .Select((it, p, s) => new PhaStorage
+                {
+                    DrugDeptCode = p.DeptName,
+                    ProducerCode = s.FacName
+                    //DrugCode=s.TradeName
+                }, true)
+                .ToPage<PhaStorage, PhaStorageDtos>(parm);
+
+            return response;
+        }
 
         /// <summary>
         /// 获取详情
@@ -62,7 +87,11 @@ namespace ZR.Service.Guiz
         {
             return Insertable(model).ExecuteReturnEntity();
         }
-
+        public int MIXAddPhaStorage(List<PhaStorage> model)
+        {
+            return MixAdd(model);
+        }
+        
         /// <summary>
         /// 修改库存
         /// </summary>
@@ -139,9 +168,26 @@ namespace ZR.Service.Guiz
         }
         public decimal? GetALLme(string DeptCode)
         {
-            var response = Queryable().LeftJoin<Departments>((it,p)=>p.DeptName==DeptCode)
-               .Where((it, p) => p.DeptName == DeptCode)
-                 .Sum((it, p) => it.StoreCost);
+            var response = Queryable()
+                 .LeftJoin<Departments>((it, p) => p.DeptCode == it.DrugDeptCode)
+                 .Where((it, p) => p.DeptName == DeptCode)
+                 .Sum((it)=>it.StoreCost)
+                ;
+             
+
+            //var subQuery = Context.Queryable<PhaStorage>()
+            //    .LeftJoin<Departments>((it, p) => p.DeptCode == it.DrugDeptCode)
+            //    .Where((it, p) => p.DeptName == DeptCode)
+            //    .GroupBy(it => new { it.DrugCode, it.StoreCost })
+            //    .Select(it => new { it.DrugCode, it.StoreCost });
+
+            //// 主查询：对分组后的结果计算总价值
+            //var totalStockValue = Context.Queryable(subQuery)
+            //   .Sum(x => x.StoreCost);
+
+
+
+
 
             return response;
         }
@@ -180,7 +226,7 @@ namespace ZR.Service.Guiz
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), it => it.TradeName.Contains(parm.TradeName));
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugType), it => it.DrugType == parm.DrugType);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.PlaceCode), it => it.PlaceCode == parm.PlaceCode);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ProducerCode), it => it.ProducerCode == parm.ProducerCode);
+            //predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ProducerCode), it => it.ProducerCode == parm.ProducerCode);
             return predicate;
         }
 

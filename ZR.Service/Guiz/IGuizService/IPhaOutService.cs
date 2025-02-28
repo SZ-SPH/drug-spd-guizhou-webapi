@@ -22,5 +22,8 @@ namespace ZR.Service.Guiz.IGuizService
         (string, object, object) ImportPhaOut(List<PhaOut> list);
 
         PagedInfo<PhaOutDto> ExportList(PhaOutQueryDto parm);
+
+        List<PhaOut> Alloutcode(string parm);
+
     }
 }

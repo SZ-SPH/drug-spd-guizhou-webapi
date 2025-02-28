@@ -66,6 +66,11 @@ namespace ZR.Model.Business
 
     public class EOut
     {
+        public int Page { get; set; }
+        public int AllPage { get; set; }
+        //public string iscong { get; set; }
+
+
         public string biidess { get; set; }
 
         public string Demo { get; set; }
@@ -176,6 +181,8 @@ namespace ZR.Model.Business
 
     public class rk
     {
+        public int Page { get; set; }
+        public int AllPage { get; set; }
         /// <summary>
         /// 入库类型	  一般入库
         /// </summary>
@@ -239,7 +246,7 @@ namespace ZR.Model.Business
         /// <summary>
         /// 数量
         /// </summary>
-        public string PackQty { get; set; }
+        public decimal PackQty { get; set; }
         /// <summary>
         ///   购入价
         /// </summary>

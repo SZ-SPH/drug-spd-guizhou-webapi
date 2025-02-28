@@ -12,6 +12,8 @@ using Org.BouncyCastle.Asn1.Ocsp;
 using ZR.Service.Business.IBusinessService;
 using ZR.Service.Business;
 using Aliyun.OSS;
+using MailKit.Search;
+using Microsoft.Data.SqlClient;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -80,13 +82,27 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         public IActionResult Addout([FromBody] List<PhaOut> phaOuts)
         {
             // 用于存储已经处理的出库单
+            
             var processedOrders = new Dictionary<string, OutOrder>();
+            var codeOrders = new Dictionary<string, string>();
+
             OutOrder currentOrder = new OutOrder();
+            List<PhaOut> pa = new List<PhaOut>();
 
             foreach (var item in phaOuts)
             {
+                string orderKey = item.OutListCode;
+                if (!codeOrders.ContainsKey(orderKey))
+                {
+                    pa.AddRange(_PhaOutService.Alloutcode(item.OutListCode));
+                    codeOrders[orderKey] = orderKey;
+                }
+            }
+
+            foreach (var item in pa)
+            {
                 // 创建唯一的出库单标识
-                string orderKey = $"{item.DrugDeptCode}-{item.DrugStorageCode}-{item.OutType}";
+                string orderKey = $"{item.DrugDeptCode}-{item.OutListCode}-{item.DrugStorageCode}-{item.OutType}";
                 //OutOrder currentOrder = new OutOrder();
                 // 检查是否已经存在相同的出库单
                 if (!processedOrders.ContainsKey(orderKey))
@@ -96,7 +112,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     {
                         OutOrderCode = GenerateUniqueOutOrderCode(), // 生成唯一的出库单代码
                         OutWarehouseID = item.DrugDeptCode,
-                        UseReceive = item.GetPerson,
+                        UseReceive = item.GetPersonName,
                         OutBillCode =100,
                         InpharmacyId = item.DrugStorageCode,
                         Times = DateTime.Now
@@ -325,7 +341,7 @@ namespace ZR.Admin.WebApi.Controllers.Gui
         {
             using (var client = new HttpClient())
             {
-                string url = $"http://192.168.2.21:9403/His/GetPhaOutList?beginTime={phaOutInQuery.beginTime:yyyy-MM-dd}&endTime={phaOutInQuery.endTime:yyyy-MM-dd}";
+                string url = $"http://192.168.1.95:7800/His/GetPhaOutList?beginTime={phaOutInQuery.beginTime:yyyy-MM-dd}&endTime={phaOutInQuery.endTime:yyyy-MM-dd}";
 
                 HttpResponseMessage response = await client.GetAsync(url);
                 var responseContent = await response.Content.ReadAsStringAsync();

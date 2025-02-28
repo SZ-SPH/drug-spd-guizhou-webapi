@@ -29,6 +29,8 @@ namespace ZR.Model.GuiHis.Dto
     /// </summary>
     public class PhaOutDto
     {
+        public string GetPersonName { get; set; }
+        
         public string DrugDeptName { get; set; }
         public string DrugStorageName { get; set; }
 

@@ -7,6 +7,7 @@ using ZR.Service.Guiz.IGuizService;
 using ZR.Model.GuiHis;
 using JinianNet.JNTemplate;
 using System.ComponentModel;
+using Aliyun.OSS;
 
 
 namespace ZR.Service.Guiz
@@ -30,26 +31,35 @@ namespace ZR.Service.Guiz
                         var response = Queryable()
                 .LeftJoin<Departments>((p, d1) => p.DrugDeptCode == d1.DeptCode)
                 .LeftJoin<Departments>((p, d1, d2) => p.DrugStorageCode == d2.DeptCode)
+                .LeftJoin<OuWarehouset>((p, d1, d2,ow)=>p.OutBillCode==ow.OutBillCode)
                 .Where(predicate.ToExpression())
-         .Where((p, d1, d2) => string.IsNullOrEmpty(parm.DrugDeptName) || d1.DeptName.Contains(parm.DrugDeptName)) // 使用 DeptName 过滤
-        .Where((p, d1, d2) => string.IsNullOrEmpty(parm.DrugStorageName) || d2.DeptName.Contains(parm.DrugStorageName))
+                 .Where((p, d1, d2) => string.IsNullOrEmpty(parm.DrugDeptName) || d1.DeptName.Contains(parm.DrugDeptName)) // 使用 DeptName 过滤
+                .Where((p, d1, d2) => string.IsNullOrEmpty(parm.DrugStorageName) || d2.DeptName.Contains(parm.DrugStorageName))
+                .Where((p, d1, d2,ow) => ow.OutBillCode==null)
+                  .OrderByDescending((p) => p.OperDate)
                 .Select((p, d1, d2) => new PhaOutDto
                 {
                     OutBillCode = p.OutBillCode.SelectAll(),
                     DrugDeptName = d1.DeptName,
                     DrugStorageName = d2.DeptName,
-                }).OrderBy(p=>p.ApplyDate,OrderByType.Desc)
+                }).OrderBy(p=>p.OperDate, OrderByType.Desc)
                 .ToPage(parm);
     
             return response;
         }
 
+        public List<PhaOut> Alloutcode(string parm)
+        {
 
+            var response = Queryable().Where((it)=>it.OutListCode== parm).ToList();
+    
+            return response;
+        }
         /// <summary>
         /// 获取详情
         /// </summary>
         /// <param name="outBillCode"></param>
-       
+
         /// <returns></returns>
         public PhaOut GetInfo(long outBillCode)
         {
@@ -192,6 +202,8 @@ namespace ZR.Service.Guiz
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.InListCode), p => p.InListCode == parm.InListCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), p => p.DrugCode == parm.DrugCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), p => p.TradeName.Contains(parm.TradeName));
+            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), p => p.TradeName.Contains(parm.TradeName));
+
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugType), p => p.DrugType == parm.DrugType);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.ProducerCode), p => p.ProducerCode == parm.ProducerCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.CompanyCode), p => p.CompanyCode == parm.CompanyCode);

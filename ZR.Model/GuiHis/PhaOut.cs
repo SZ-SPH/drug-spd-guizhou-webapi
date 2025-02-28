@@ -97,11 +97,16 @@ namespace ZR.Model.GuiHis
         /// </summary>
         [SugarColumn(ColumnName = "tradeName")]
         public string TradeName { get; set; }
-
         /// <summary>
-        /// 药品类别
+        /// 领取人名称
         /// </summary>
-        [SugarColumn(ColumnName = "drugType")]
+        [SugarColumn(ColumnName = "getPersonName")]
+        public string GetPersonName { get; set; }
+        
+       /// <summary>
+       /// 药品类别
+       /// </summary>
+       [SugarColumn(ColumnName = "drugType")]
         public string DrugType { get; set; }
 
         /// <summary>
@@ -638,9 +643,14 @@ namespace ZR.Model.GuiHis
 
         [ExcelColumn(Name = "出库类型")]
         public string OutTypeLabel { get; set; }
+        /// <summary>
+        /// 领取人名称
+        /// </summary>
+        [ExcelColumn(Name = "领取人")]
+        public string GetPersonName { get; set; }
     }
+  
 
 
- 
 }
 

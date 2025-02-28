@@ -27,6 +27,10 @@ namespace ZR.Model.Business
         /// 创建时间 
         /// </summary>
         public DateTime? CreateTime { get; set; }
+        /// <summary>
+        /// 推送时间
+        /// </summary>
+        public DateTime? PushTime { get; set; }
 
         /// <summary>
         /// 创建人 

@@ -68,6 +68,7 @@ namespace ZR.Model.Business.Dto
 
     public class InwarehousedetaiWithDruglDto
     {
+
         public string ProductCode { get; set; }
         public string Tstars { get; set; }
         

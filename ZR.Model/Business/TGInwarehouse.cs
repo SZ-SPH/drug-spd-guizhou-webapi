@@ -204,9 +204,11 @@ namespace ZR.Model.Business
         public string companyCode { get; set; }
         public string planNo { get; set; }
         public string billCode { get; set; }
+        public string spdInputId { get; set; }
+
     }
 
-   public class resPutList
+    public class resPutList
     {
         public string drugDeptCode {  get; set; }
         public string inBillCode { get; set; }

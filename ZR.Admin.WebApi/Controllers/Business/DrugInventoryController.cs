@@ -185,8 +185,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
         {
             try
             {
-                //清空表
-                _DrugInventoryService.TruncateDrugInventory();
+                ////清空表
+                //_DrugInventoryService.TruncateDrugInventory();
 
 
                 PhaOutInQuery phaOutInQuery = new PhaOutInQuery
@@ -262,7 +262,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             foreach (var item in drugInventorys)
             {
                 // 创建唯一的出库单标识
-                string orderKey = $"{item.DrugDeptCode}-{item.CompanyCode}-{item.InvoiceNo}";
+                string orderKey = $"{item.DrugDeptCode}-{item.InListCode}-{item.CompanyCode}-{item.InvoiceNo}";
                 //OutOrder currentOrder = new OutOrder();
                 // 检查是否已经存在相同的出库单
                 if (!processedOrders.ContainsKey(orderKey))

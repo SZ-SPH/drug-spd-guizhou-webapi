@@ -27,6 +27,9 @@ namespace ZR.Service.Business
                 .LeftJoin<Departments>((it, p) => it.DrugDeptCode == p.DeptCode)
                 .LeftJoin<Departments>((it, p,s) => it.DrugStorageCode == s.DeptCode)
                 .Where(predicate.ToExpression())
+                .Where((it, p, s) => string.IsNullOrEmpty(parm.DrugDeptCode) || p.DeptName.Contains(parm.DrugDeptCode))
+                .Where((it, p, s) =>string.IsNullOrEmpty(parm.DrugStorageCode)||s.DeptName.Contains(parm.DrugStorageCode))
+                .OrderByDescending((it)=>it.OperDate)
                 .Select((it, p, s)=>new OuWarehouset
                 {
                     DrugDeptCode = p.DeptName,
@@ -36,7 +39,26 @@ namespace ZR.Service.Business
 
             return response;
         }
+        //public decimal AllMixPrice(OuWarehousetQueryDto parm)
+        //{
+        //    var predicate = QueryExp(parm);
 
+        //    var response = Queryable()
+        //        .LeftJoin<Departments>((it, p) => it.DrugDeptCode == p.DeptCode)
+        //        .LeftJoin<Departments>((it, p, s) => it.DrugStorageCode == s.DeptCode)
+        //        .Where(predicate.ToExpression())
+        //        .Where((it, p, s) => string.IsNullOrEmpty(parm.DrugDeptCode) || p.DeptName.Contains(parm.DrugDeptCode))
+        //        .Where((it, p, s) => string.IsNullOrEmpty(parm.DrugStorageCode) || s.DeptName.Contains(parm.DrugStorageCode))
+        //        .OrderByDescending((it) => it.OperDate)
+        //        .Select((it, p, s) => new OuWarehouset
+        //        {
+        //            DrugDeptCode = p.DeptName,
+        //            DrugStorageCode = s.DeptName
+        //        }, true);
+               
+
+        //    return response;
+        //}
 
         /// <summary>
         /// 获取详情
@@ -119,13 +141,13 @@ namespace ZR.Service.Business
         /// </summary>
         /// <param name="parm"></param>
         /// <returns></returns>
-        public PagedInfo<OuWarehousetDto> ExportList(OuWarehousetQueryDto parm)
+        public PagedInfo<OuWarehousetDtos> ExportList(OuWarehousetQueryDto parm)
         {
             var predicate = QueryExp(parm);
 
             var response = Queryable()
                 .Where(predicate.ToExpression())
-                .Select((it) => new OuWarehousetDto()
+                .Select((it) => new OuWarehousetDtos()
                 {
                 }, true)
                 .ToPage(parm);
@@ -153,7 +175,7 @@ namespace ZR.Service.Business
             var predicate = Expressionable.Create<OuWarehouset>();
 
             predicate = predicate.AndIF(parm.OutorderID != null, it => it.OutorderID == parm.OutorderID);
-            predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode == parm.DrugDeptCode);
+            //predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode == parm.DrugDeptCode);
             predicate = predicate.AndIF(parm.OutBillCode != null, it => it.OutBillCode == parm.OutBillCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.GroupCode), it => it.GroupCode == parm.GroupCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
