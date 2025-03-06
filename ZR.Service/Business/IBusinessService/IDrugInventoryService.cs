@@ -11,6 +11,7 @@ namespace ZR.Service.Business.IBusinessService
         PagedInfo<DrugInventoryDto> GetList(DrugInventoryQueryDto parm);
 
         DrugInventory GetInfo(int Id);
+        DrugInventory GetInfos(long? code);
 
 
         DrugInventory AddDrugInventory(DrugInventory parm);

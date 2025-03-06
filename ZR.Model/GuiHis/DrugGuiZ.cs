@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 namespace ZR.Model.GuiHis
 {
 
+    public class DrugArea
+    {
+        public string productAreaCode { get; set; } // 编号
+        public string productAreaName { get; set; } // 名称
+    }
+
 
     //药品
     public class GuiDrugInQuery

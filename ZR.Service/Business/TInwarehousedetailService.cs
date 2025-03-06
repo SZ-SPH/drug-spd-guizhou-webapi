@@ -34,11 +34,12 @@ namespace ZR.Service.Business
             var predicate = QueryExp(parm);
 
             var response = Queryable()
-                .LeftJoin<TGInwarehouse>((it, ti)=>it.SerialNum==ti.PlanNo.ToString())
+                .LeftJoin<TGInwarehouse>((it, ti) => it.SerialNum == ti.PlanNo.ToString())
                 //.LeftJoin<Inwarehouse>((it, ti,c) => it.InwarehouseId == ti.Id)
                 .LeftJoin<CompanyInfo>((it, ti, c) => it.ProductCode == c.FacCode)
                 .LeftJoin<Departments>((it, ti, c, f) => ti.DrugDeptCode == f.DeptCode)
                 .Where(predicate.ToExpression())
+                .Where((it, ti) => ti.TradeName.Contains(parm.DrugName)|| string.IsNullOrEmpty(parm.DrugName))
                 .OrderByDescending((it) => it.CreateTime)
                 .Select((it, ti, c, f) => new InwarehousedetaiWithDruglDto
                 {
@@ -84,7 +85,6 @@ namespace ZR.Service.Business
                     MixBuyPrice = it.MixBuyPrice,
                     MixOutPrice = it.MixOutPrice,
                     Tstars = it.Tstars,
-
                 })
                 .ToPage(parm);
 
@@ -196,6 +196,7 @@ namespace ZR.Service.Business
             var predicate = Expressionable.Create<TInwarehousedetail>();
 
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
+
             predicate = predicate.AndIF(parm.BeginCreateTime != null, it => it.CreateTime >= parm.BeginCreateTime);
             predicate = predicate.AndIF(parm.EndCreateTime != null, it => it.CreateTime <= parm.EndCreateTime);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.BatchNo), it => it.BatchNo == parm.BatchNo);

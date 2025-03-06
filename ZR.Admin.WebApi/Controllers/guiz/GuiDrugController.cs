@@ -10,6 +10,10 @@ using System.Text;
 using ZR.Admin.WebApi.Controllers.Business;
 using System.Reflection.Metadata.Ecma335;
 using Aliyun.OSS;
+using Org.BouncyCastle.Asn1.Ocsp;
+using Microsoft.AspNetCore.JsonPatch.Internal;
+using SqlSugar;
+using System.Collections.Generic;
 
 //创建时间：2024-11-27
 namespace ZR.Admin.WebApi.Controllers.Gui
@@ -262,6 +266,36 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                 }
             }
         }
+
+
+
+        [HttpGet("Area")]
+
+        public async Task<List<DrugArea>> Area()
+        {
+            using (var client = new HttpClient())
+            {
+
+                string url = $"http://192.168.1.95:7800/His/GetProductAreaList";
+                //var json = JsonConvert.SerializeObject(requests);
+                //var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.GetAsync(url);
+                // 获取响应内容
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // 解析 JSON 响应
+                    var apiResponse = JsonConvert.DeserializeObject <List<DrugArea>> (responseContent);
+                    return apiResponse; // 返回 ApiResponse 对象
+                }
+                else
+                {
+                    // 处理错误
+                    throw new Exception($"Error: {response.StatusCode}, Message: {response.ReasonPhrase}, Response: {responseContent}");
+                }
+            }
+        }
+
 
     }
 }

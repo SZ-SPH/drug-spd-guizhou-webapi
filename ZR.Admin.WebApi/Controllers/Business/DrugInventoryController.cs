@@ -187,8 +187,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
             {
                 ////清空表
                 //_DrugInventoryService.TruncateDrugInventory();
-
-
                 PhaOutInQuery phaOutInQuery = new PhaOutInQuery
                 {
                     beginTime = DateTime.Now.AddHours(-1).ToString("yyyy-M-d HH:mm:ss"), // 当前时间减去一小时并格式化
@@ -196,16 +194,33 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 };
 
                 var x = await SendRequestsAsync(phaOutInQuery);
+                // 检查 x 是否为 null
+                if (x == null || !x.Any())
+                {
+                    return BadRequest("未获取到数据");
+                }
 
                 foreach (var item in x)
                 {
-                    //var nu = _DrugInventoryService.GetInfo(item.OutBillCode, item.GroupCode);
-                    // if (nu == null)
-                    //{
+                    if (item == null) // 检查 item 是否为 null
+                    {
+                        continue; // 跳过 null 项
+                    }
+
+                    var nu = _DrugInventoryService.GetInfos(item.InBillCode);
+                    if (nu != null)
+                    {
+                        var modal = item.Adapt<DrugInventory>().ToUpdate(HttpContext);
+                        _DrugInventoryService.UpdateDrugInventory(modal);
+
+                    }
+                    else
+                    {
                         var modal = item.Adapt<DrugInventory>().ToCreate(HttpContext);
                         _DrugInventoryService.AddDrugInventory(modal);
-                    //}
+                    }
                 }
+       
                 return SUCCESS("true");
             }
             catch (Exception ex)
@@ -278,6 +293,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
                         OutBillCode = 10,
                         Billcodesf = item.InvoiceNo,
                         //InpharmacyId = item.DrugStorageCode,
+                        Remarks=item.Mark,
                         Times = DateTime.Now
                     };
                     var modal = outOrder.Adapt<OutOrder>().ToCreate(HttpContext);

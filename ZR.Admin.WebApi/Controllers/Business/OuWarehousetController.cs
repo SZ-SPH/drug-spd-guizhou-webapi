@@ -4,6 +4,7 @@ using ZR.Model.Business;
 using ZR.Service.Business.IBusinessService;
 using ZR.Admin.WebApi.Filters;
 using MiniExcelLibs;
+using static ZR.Service.Business.OuWarehousetService;
 
 //创建时间：2024-12-11
 namespace ZR.Admin.WebApi.Controllers.Business
@@ -37,7 +38,14 @@ namespace ZR.Admin.WebApi.Controllers.Business
             var response = _OuWarehousetService.GetList(parm);
             return SUCCESS(response);
         }
-
+        [HttpGet("Alldaylist")]
+        [ActionPermissionFilter(Permission = "ouwarehouset:list")]
+        public IActionResult DAYGetList([FromQuery] OuWarehousetQueryDto parm)
+        {
+            var response = _OuWarehousetService.DAYGetList(parm);
+            return SUCCESS(response);
+        }
+        //DAYprice DAYGetList(OuWarehousetQueryDto parm);
 
         /// <summary>
         /// 查询出库药品详情详情

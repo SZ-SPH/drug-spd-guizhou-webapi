@@ -1,5 +1,6 @@
 using ZR.Model.Business.Dto;
 using ZR.Model.Business;
+using static ZR.Service.Business.OuWarehousetService;
 
 namespace ZR.Service.Business.IBusinessService
 {
@@ -9,7 +10,7 @@ namespace ZR.Service.Business.IBusinessService
     public interface IOuWarehousetService : IBaseService<OuWarehouset>
     {
         PagedInfo<OuWarehousetDto> GetList(OuWarehousetQueryDto parm);
-
+        DAYprice DAYGetList(OuWarehousetQueryDto parm);
         OuWarehouset GetInfo(int Id);
         List<OuWarehouset> EList(int Id);
 

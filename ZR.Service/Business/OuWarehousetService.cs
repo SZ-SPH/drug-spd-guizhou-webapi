@@ -22,15 +22,19 @@ namespace ZR.Service.Business
         public PagedInfo<OuWarehousetDto> GetList(OuWarehousetQueryDto parm)
         {
             var predicate = QueryExp(parm);
-
+            //predicate = predicate.AndIF(parm.BeginCreateTime != null, it => it.CreateTime >= parm.BeginCreateTime);
+            //predicate = predicate.AndIF(parm.EndCreateTime != null, it => it.CreateTime <= parm.EndCreateTime);
             var response = Queryable()
                 .LeftJoin<Departments>((it, p) => it.DrugDeptCode == p.DeptCode)
                 .LeftJoin<Departments>((it, p,s) => it.DrugStorageCode == s.DeptCode)
+                .LeftJoin<OutOrder>((it,p,s,ad)=>it.OutorderID==ad.Id)
                 .Where(predicate.ToExpression())
                 .Where((it, p, s) => string.IsNullOrEmpty(parm.DrugDeptCode) || p.DeptName.Contains(parm.DrugDeptCode))
                 .Where((it, p, s) =>string.IsNullOrEmpty(parm.DrugStorageCode)||s.DeptName.Contains(parm.DrugStorageCode))
+                .Where((it, p, s,ad)=> ad.CreateTime >= parm.BeginCreateTime)
+                .Where((it, p, s, ad) =>  ad.CreateTime <= parm.EndCreateTime)      
                 .OrderByDescending((it)=>it.OperDate)
-                .Select((it, p, s)=>new OuWarehouset
+                .Select((it, p, s,ad)=>new OuWarehouset
                 {
                     DrugDeptCode = p.DeptName,
                     DrugStorageCode=s.DeptName
@@ -39,6 +43,47 @@ namespace ZR.Service.Business
 
             return response;
         }
+        public class DAYprice
+        {
+            public decimal? AllPurchasePrice {  get; set; }
+            public decimal? AllRetailPrice { get; set; }
+
+        }
+        public DAYprice DAYGetList(OuWarehousetQueryDto parm)
+        {
+            var predicate = QueryExp(parm);
+            //predicate = predicate.AndIF(parm.BeginCreateTime != null, it => it.CreateTime >= parm.BeginCreateTime);
+            //predicate = predicate.AndIF(parm.EndCreateTime != null, it => it.CreateTime <= parm.EndCreateTime);
+            var response = Queryable()
+                .LeftJoin<Departments>((it, p) => it.DrugDeptCode == p.DeptCode)
+                .LeftJoin<Departments>((it, p, s) => it.DrugStorageCode == s.DeptCode)
+                .LeftJoin<OutOrder>((it, p, s, ad) => it.OutorderID == ad.Id)
+                .Where(predicate.ToExpression())
+                .Where((it, p, s) => string.IsNullOrEmpty(parm.DrugDeptCode) || p.DeptName.Contains(parm.DrugDeptCode))
+                .Where((it, p, s) => string.IsNullOrEmpty(parm.DrugStorageCode) || s.DeptName.Contains(parm.DrugStorageCode))
+                .Where((it, p, s, ad) => ad.CreateTime >= parm.BeginCreateTime)
+                .Where((it, p, s, ad) => ad.CreateTime <= parm.EndCreateTime)
+                .Sum((it) => (it.OutNum / it.PackQty) * it.PurchasePrice);
+
+                var predicates = QueryExp(parm);
+                //predicate = predicate.AndIF(parm.BeginCreateTime != null, it => it.CreateTime >= parm.BeginCreateTime);
+                //predicate = predicate.AndIF(parm.EndCreateTime != null, it => it.CreateTime <= parm.EndCreateTime);
+                var responses = Queryable()
+                    .LeftJoin<Departments>((it, p) => it.DrugDeptCode == p.DeptCode)
+                    .LeftJoin<Departments>((it, p, s) => it.DrugStorageCode == s.DeptCode)
+                    .LeftJoin<OutOrder>((it, p, s, ad) => it.OutorderID == ad.Id)
+                    .Where(predicate.ToExpression())
+                    .Where((it, p, s) => string.IsNullOrEmpty(parm.DrugDeptCode) || p.DeptName.Contains(parm.DrugDeptCode))
+                    .Where((it, p, s) => string.IsNullOrEmpty(parm.DrugStorageCode) || s.DeptName.Contains(parm.DrugStorageCode))
+                    .Where((it, p, s, ad) => ad.CreateTime >= parm.BeginCreateTime)
+                    .Where((it, p, s, ad) => ad.CreateTime <= parm.EndCreateTime)
+                    .Sum((it) => (it.OutNum / it.PackQty) * it.RetailPrice);
+
+            return new DAYprice { AllPurchasePrice = response, AllRetailPrice = responses };
+        }
+
+
+
         //public decimal AllMixPrice(OuWarehousetQueryDto parm)
         //{
         //    var predicate = QueryExp(parm);
@@ -55,7 +100,7 @@ namespace ZR.Service.Business
         //            DrugDeptCode = p.DeptName,
         //            DrugStorageCode = s.DeptName
         //        }, true);
-               
+
 
         //    return response;
         //}
@@ -177,6 +222,7 @@ namespace ZR.Service.Business
             predicate = predicate.AndIF(parm.OutorderID != null, it => it.OutorderID == parm.OutorderID);
             //predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugDeptCode), it => it.DrugDeptCode == parm.DrugDeptCode);
             predicate = predicate.AndIF(parm.OutBillCode != null, it => it.OutBillCode == parm.OutBillCode);
+
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.GroupCode), it => it.GroupCode == parm.GroupCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.DrugCode), it => it.DrugCode == parm.DrugCode);
             predicate = predicate.AndIF(!string.IsNullOrEmpty(parm.TradeName), it => it.TradeName == parm.TradeName);

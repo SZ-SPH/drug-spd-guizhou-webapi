@@ -14,6 +14,8 @@ namespace ZR.Model.Business.Dto
         public string DrugStorageCode { get; set; }
 
         public string TradeName { get; set; }
+        public DateTime? BeginCreateTime { get; set; }
+        public DateTime? EndCreateTime { get; set; }
     }
 
     /// <summary>

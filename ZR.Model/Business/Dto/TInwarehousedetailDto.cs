@@ -7,6 +7,7 @@ namespace ZR.Model.Business.Dto
     public class TInwarehousedetailQueryDto : PagerInfo 
     {
         public string DrugCode { get; set; }
+        public string DrugName { get; set; }
         public DateTime? BeginCreateTime { get; set; }
         public DateTime? EndCreateTime { get; set; }
         public string BatchNo { get; set; }

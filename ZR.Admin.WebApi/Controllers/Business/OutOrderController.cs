@@ -290,7 +290,6 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
                 eOut.Mark = list.Remarks;
 
-
                 eOut.GTime = DateTime.Now.ToString("yyyy-MM-dd");
                 decimal SumApp = 0;
                 decimal SumSale = 0;
@@ -302,10 +301,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     eIn.Specs = t.Specs;
                     eIn.PackUnit = t.PackUnit;
                     eIn.PackQty = t.PackQty.ToString();
-                    eIn.PurchasePrice = t.PurchasePrice.ToString();
-                    eIn.ApproveCost = t.ApproveCost.ToString();
-                    eIn.RetailPrice = t.RetailPrice.ToString();
-                    eIn.SaleCost = t.SaleCost.ToString();
+                    eIn.PurchasePrice = t.PurchasePrice.ToString("G0");
+                    eIn.ApproveCost = t.ApproveCost.ToString("G0");
+                    eIn.RetailPrice = t.RetailPrice.ToString("G0");
+                    eIn.SaleCost = t.SaleCost.ToString("G0");
                     eIn.ProducerCode = t.ProducerCode.ToString();
                     eIn.ValidDate =t.ValidDate?.ToString("yyyy-MM-dd");
                     eIn.BatchNo = t.BatchNo;
@@ -315,8 +314,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     lEin.Add(eIn);
                 }
                 eOut.Drugs = lEin;
-                eOut.SumApproveCost = SumApp.ToString();
-                eOut.SumSaleCost = SumSale.ToString();
+                eOut.SumApproveCost = SumApp.ToString("G0");
+                eOut.SumSaleCost = SumSale.ToString("G0");
                 eOut.ChinaSumApproveCost = ConvertToChinese(SumApp).ToString();
                 eOut.ChinaSumSaleCost = ConvertToChinese(SumSale).ToString();
                 eOut.num = ow.Count().ToString();
@@ -374,10 +373,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     eIn.Specs = t.Specs;
                     eIn.PackUnit = t.PackUnit;
                     eIn.PackQty = (t.OutNum / t.PackQty).ToString();
-                    eIn.PurchasePrice = t.PurchasePrice.ToString();
-                    eIn.ApproveCost = t.ApproveCost.ToString();
-                    eIn.RetailPrice = t.RetailPrice.ToString();
-                    eIn.SaleCost = t.SaleCost.ToString();
+                    eIn.PurchasePrice = t.PurchasePrice.ToString("G0");
+                    eIn.ApproveCost = t.ApproveCost.ToString("G0");
+                    eIn.RetailPrice = t.RetailPrice.ToString("G0");
+                    eIn.SaleCost = t.SaleCost.ToString("G0");
                     eIn.ProducerCode = t.ProducerCode?.ToString();
                     eIn.ValidDate = t.ValidDate?.ToString("yyyy-MM-dd");
                     eIn.BatchNo = t.BatchNo;
@@ -388,8 +387,8 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     lEin.Add(eIn);
                 }
                 eOut.Drugs = lEin;
-                eOut.SumApproveCost = SumApp.ToString();
-                eOut.SumSaleCost = SumSale.ToString();
+                eOut.SumApproveCost = SumApp.ToString("G0");
+                eOut.SumSaleCost = SumSale.ToString("G0");
                 eOut.ChinaSumApproveCost = ConvertToChinese(SumApp).ToString();
                 eOut.ChinaSumSaleCost = ConvertToChinese(SumSale).ToString();
                 eOut.num = ow.Count().ToString();
@@ -428,7 +427,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             sheet.SetColumnWidth(7, 7 * 256);
             sheet.SetColumnWidth(8, 10 * 256);
             sheet.SetColumnWidth(9, 10 * 256);
-            sheet.SetColumnWidth(10, 6 * 256);
+            sheet.SetColumnWidth(10, 7 * 256);
             sheet.SetColumnWidth(11, 6 * 256);
             sheet.SetColumnWidth(12, 5 * 256);
 
@@ -467,7 +466,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             wrapTextStyle.BorderRight = BorderStyle.Thin; // 右边框
 
             wrapTextStyle.WrapText = true; // 启用自动换行
-            wrapTextStyle.ShrinkToFit = true; // 启用字体缩小以适应单元格
+
             wrapTextStyle.VerticalAlignment = VerticalAlignment.Center;
             IFont fontss = workbook.CreateFont();
             fontss.FontHeightInPoints = 8;
@@ -475,7 +474,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
             ICellStyle wrapTextStyleS = workbook.CreateCellStyle();
             wrapTextStyleS.WrapText = true; // 启用自动换行
-            wrapTextStyleS.ShrinkToFit = true; // 启用字体缩小以适应单元格
+            wrapTextStyleS.ShrinkToFit = false; // 启用字体缩小以适应单元格
             wrapTextStyleS.VerticalAlignment = VerticalAlignment.Center;
             IFont fonstss = workbook.CreateFont();
             fonstss.FontHeightInPoints = 8;
@@ -484,7 +483,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             ICellStyle TopborderStyle = workbook.CreateCellStyle();
             TopborderStyle.BorderTop = BorderStyle.Thin; // 下边框       
             TopborderStyle.WrapText = true; // 启用自动换行
-            TopborderStyle.ShrinkToFit = true; // 启用字体缩小以适应单元格
+            TopborderStyle.ShrinkToFit = false; // 启用字体缩小以适应单元格
             TopborderStyle.VerticalAlignment = VerticalAlignment.Center;
             TopborderStyle.SetFont(fonstss);
 
@@ -499,7 +498,7 @@ namespace ZR.Admin.WebApi.Controllers.Business
             lefttopborderStyle.BorderTop = BorderStyle.Thin; // 上边框
             lefttopborderStyle.BorderLeft = BorderStyle.Thin; // 左边框
             lefttopborderStyle.WrapText = true; // 启用自动换行
-            lefttopborderStyle.ShrinkToFit = true; // 启用字体缩小以适应单元格
+            lefttopborderStyle.ShrinkToFit = false; // 启用字体缩小以适应单元格
             lefttopborderStyle.VerticalAlignment = VerticalAlignment.Center;
             lefttopborderStyle.SetFont(fonstss);
 
@@ -507,28 +506,28 @@ namespace ZR.Admin.WebApi.Controllers.Business
             leftbtnborderStyle.BorderBottom = BorderStyle.Thin; // 下边框
             leftbtnborderStyle.BorderLeft = BorderStyle.Thin; // 右边框
             leftbtnborderStyle.WrapText = true; // 启用自动换行
-            leftbtnborderStyle.ShrinkToFit = true; // 启用字体缩小以适应单元格
+            leftbtnborderStyle.ShrinkToFit = false; // 启用字体缩小以适应单元格
             leftbtnborderStyle.VerticalAlignment = VerticalAlignment.Center;
             leftbtnborderStyle.SetFont(fonstss);
             ICellStyle rightbtnborderStyle = workbook.CreateCellStyle();
             rightbtnborderStyle.BorderBottom = BorderStyle.Thin; // 下边框
             rightbtnborderStyle.BorderRight = BorderStyle.Thin; // 右边框
             rightbtnborderStyle.WrapText = true; // 启用自动换行
-            rightbtnborderStyle.ShrinkToFit = true; // 启用字体缩小以适应单元格
+            rightbtnborderStyle.ShrinkToFit = false; // 启用字体缩小以适应单元格
             rightbtnborderStyle.VerticalAlignment = VerticalAlignment.Center;
             rightbtnborderStyle.SetFont(fonstss);
             ICellStyle righttopborderStyle = workbook.CreateCellStyle();
             righttopborderStyle.BorderTop = BorderStyle.Thin; // 下边框
             righttopborderStyle.BorderRight = BorderStyle.Thin; // 右边框
             righttopborderStyle.WrapText = true; // 启用自动换行
-            righttopborderStyle.ShrinkToFit = true; // 启用字体缩小以适应单元格
+            righttopborderStyle.ShrinkToFit = false; // 启用字体缩小以适应单元格
             righttopborderStyle.VerticalAlignment = VerticalAlignment.Center;
             righttopborderStyle.SetFont(fonstss);
             ICellStyle borderStyles = workbook.CreateCellStyle();
             borderStyles.BorderTop = BorderStyle.Thin; // 上边框
             borderStyles.BorderBottom = BorderStyle.Thin; // 下边框
             borderStyles.WrapText = true; // 启用自动换行
-            borderStyles.ShrinkToFit = true; // 启用字体缩小以适应单元格
+            borderStyles.ShrinkToFit = false; // 启用字体缩小以适应单元格
             borderStyles.VerticalAlignment = VerticalAlignment.Center;
             borderStyles.SetFont(fonstss);
 
@@ -658,10 +657,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
                         // 大写金额行
                         IRow prow9 = sheet.CreateRow(rownums);
                         ICell pcerow90 = prow9.CreateCell(1);
-                        pcerow90.SetCellValue($"大写批价金额:{alleout[i].ChinaSumSaleCost}");
+                        pcerow90.SetCellValue($"大写批价金额:{alleout[i].ChinaSumApproveCost}");
                         pcerow90.CellStyle = wrapTextStyle;
                         ICell pcerow91 = prow9.CreateCell(6);
-                        pcerow91.SetCellValue($"大写零售金额:{alleout[i].ChinaSumApproveCost}");
+                        pcerow91.SetCellValue($"大写零售金额:{alleout[i].ChinaSumSaleCost}"); 
                         pcerow91.CellStyle = wrapTextStyle;
                         sheet.AddMergedRegion(new CellRangeAddress(rownums, rownums, 1, 5));
                         sheet.AddMergedRegion(new CellRangeAddress(rownums, rownums, 6, 11));
@@ -770,16 +769,22 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     currentPageDrugCount++;
 
                     IRow row = sheet.CreateRow(f);
-                    row.Height = 20*20;
+                    row.HeightInPoints = 28;
                     var dr = alleout[i].Drugs[rownums - ass];
                     // 创建并设置单元格值，同时应用边框样式
-                    ICell cell0 = row.CreateCell(0);
-                    cell0.SetCellValue($"{dr.TradeName}");
-                    cell0.CellStyle = wrapTextStyle;
+                    //ICell cell0 = row.CreateCell(0);
+                    //cell0.SetCellValue($"{dr.TradeName}");
+                    //cell0.CellStyle = wrapTextStyle;
+                    ICellStyle TradeNamecell = wrapTextStyle;
+                    //cell0.CellStyle = TradeNamecell;
+                    SetCellValueAutoFit(row, 0, dr.TradeName, TradeNamecell, fontss, sheet, 0, 28);
 
-                    ICell cell1 = row.CreateCell(1);
-                    cell1.SetCellValue($"{dr.Specs}");
-                    cell1.CellStyle = wrapTextStyle;
+                    //ICell cell1 = row.CreateCell(1);
+                    //cell1.SetCellValue($"{dr.Specs}");
+                 
+                    ICellStyle Specscell = wrapTextStyle;
+                    SetCellValueAutoFit(row, 1, dr.Specs, Specscell, fontss, sheet, 1, 28);
+
 
                     ICell cell2 = row.CreateCell(2);
                     cell2.SetCellValue($"{dr.PackUnit}");
@@ -806,20 +811,26 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     cell7.CellStyle = wrapTextStyle;
 
 
-                    // 设置规格列
-                    ICell specCell = row.CreateCell(8);
-               
-                    specCell.SetCellValue($"{dr.ProducerCode}");
-                    specCell.CellStyle = wrapTextStyle; // 应用自动换行样式
+                    //// 设置规格列
+                    //ICell specCell = row.CreateCell(8);
+
+                    //specCell.SetCellValue($"{dr.ProducerCode}");
+                    ////specCell.CellStyle = wrapTextStyle; // 应用自动换行样式
+
+                    ICellStyle ProducerCodecell = wrapTextStyle;
+                    //specCell.CellStyle = ProducerCodecell;
+                    SetCellValueAutoFit(row, 8, dr.ProducerCode, ProducerCodecell, fontss, sheet, 8, 28);
                     //specCell.CellStyle = borderStyle; // 也可以应用边框样式
 
                     ICell cell9 = row.CreateCell(9);
                     cell9.SetCellValue($"{dr.BatchNo}");
                     cell9.CellStyle = wrapTextStyle;
 
-                    ICell cell10 = row.CreateCell(10);
-                    cell10.SetCellValue($"{dr.ValidDate}");
-                    cell10.CellStyle = wrapTextStyle;
+                    //ICell cell10 = row.CreateCell(10);
+                    //cell10.SetCellValue($"{dr.ValidDate}");
+                    ICellStyle ValidDatecell = wrapTextStyle;
+                    //cell10.CellStyle = ProducerCodecell;
+                    SetCellValueAutoFit(row, 10, dr.ValidDate, ValidDatecell, fontss, sheet, 10, 28);
 
                     ICell cell11 = row.CreateCell(11);
                     cell11.SetCellValue($"");
@@ -855,10 +866,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
                 // 大写金额行
                 IRow row9 = sheet.CreateRow(rownums);
                 ICell cerow90 = row9.CreateCell(1);
-                cerow90.SetCellValue($"大写批价金额:{alleout[i].ChinaSumSaleCost}");
+                cerow90.SetCellValue($"大写批价金额:{alleout[i].ChinaSumApproveCost}");
                 cerow90.CellStyle = wrapTextStyle;
                 ICell cerow91 = row9.CreateCell(6);
-                cerow91.SetCellValue($"大写零售金额:{alleout[i].ChinaSumApproveCost}");
+                cerow91.SetCellValue($"大写零售金额:{alleout[i].ChinaSumSaleCost}"); 
                 cerow91.CellStyle = wrapTextStyle;
                 sheet.AddMergedRegion(new CellRangeAddress(rownums, rownums, 1, 5));
                 sheet.AddMergedRegion(new CellRangeAddress(rownums, rownums, 6, 11));
@@ -989,36 +1000,37 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     eIn.TradeName = t.TradeName;
                     eIn.Specs = t.Specs;
                     eIn.PackUnit = t.PackUnit;
-                    eIn.PackQty = (t.InNum / t.PackQty).ToString();
-                    eIn.PurchasePrice = t.PurchasePrice.ToString();
-                    eIn.ApproveCost = t.PurchaseCost.ToString();
-                    eIn.RetailPrice = t.RetailPrice.ToString();
-                    eIn.SaleCost = t.RetailCost.ToString();
+                    eIn.PackQty = (t.InNum /  (decimal)(t.PackQty.GetValueOrDefault(0))).ToString("G0");
+                    eIn.PurchasePrice = t.PurchasePrice.ToString("G0");
+                    eIn.ApproveCost = t.PurchaseCost.ToString("G0");
+                    eIn.RetailPrice = t.RetailPrice.ToString("G0");
+                    eIn.SaleCost = t.RetailCost.ToString("G0");
                     eIn.ProducerCode = t.ProducerCode.ToString();
                     eIn.ValidDate = t.ValidDate?.ToString("yyyy-MM-dd");
                     eIn.BatchNo = t.BatchNo;
                     eOut.GTime = t.OperDate.ToString();
-                    int numbers = lEin.Count();
-                    int number = numbers / 30;
-                    int number1 = numbers % 30;
-                    if (number1 > 0)
-                    {
-                        number = number + 1;
-                    }
-                    eOut.Page = 1;
-                    eOut.AllPage = number;
+                   
                     //eOut.OutType = t.OutType;
                     SumApp += t.PurchaseCost;
                     SumSale += t.RetailCost;
                     lEin.Add(eIn);
                 }
                 eOut.Drugs = lEin;
-                eOut.SumApproveCost = SumApp.ToString();
-                eOut.SumSaleCost = SumSale.ToString();
+                eOut.SumApproveCost = SumApp.ToString("G0");
+                eOut.SumSaleCost = SumSale.ToString("G0");
                 eOut.ChinaSumApproveCost = ConvertToChinese(SumApp).ToString();
                 eOut.ChinaSumSaleCost = ConvertToChinese(SumSale).ToString();
                 eOut.num = ow.Count().ToString();
                 eOut.NowgetTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                int numbers = lEin.Count();
+                int number = numbers / 30;
+                int number1 = numbers % 30;
+                if (number1 > 0)
+                {
+                    number = number + 1;
+                }
+                eOut.Page = 1;
+                eOut.AllPage = number;
                 alleout.Add(eOut);
             }
 
@@ -1034,21 +1046,17 @@ namespace ZR.Admin.WebApi.Controllers.Business
             sheet.SetColumnWidth(1, 10 * 256);
             sheet.SetColumnWidth(2, 6 * 256);
             sheet.SetColumnWidth(3, 6 * 256);
-            sheet.SetColumnWidth(4, 7 * 256);
-            sheet.SetColumnWidth(5, 7 * 256);
-            sheet.SetColumnWidth(6, 7 * 256);
-            sheet.SetColumnWidth(7, 7 * 256);
+            sheet.SetColumnWidth(4, 8 * 256);
+            sheet.SetColumnWidth(5, 8 * 256);
+            sheet.SetColumnWidth(6, 8 * 256);
+            sheet.SetColumnWidth(7, 8 * 256);
             sheet.SetColumnWidth(8, 12 * 256);
             sheet.SetColumnWidth(9, 15 * 256);
             sheet.SetColumnWidth(10, 7 * 256);
-            sheet.SetColumnWidth(11, 7 * 256);
-          
-            var printSetup = sheet.PrintSetup;
+            sheet.SetColumnWidth(11, 7 * 256);          
             // 设置打印页边距
-            //sheet.SetMargin(MarginType.TopMargin, 0.5);    // 上边距，单位：英寸
-            //sheet.SetMargin(MarginType.BottomMargin, 0.5); // 下边距，单位：英寸
-            sheet.SetMargin(MarginType.LeftMargin, 0.2);  // 左边距，单位：英寸
-            sheet.SetMargin(MarginType.RightMargin, 0.2); // 右边距，单位：英寸
+            sheet.SetMargin(MarginType.LeftMargin, 0.1);  // 左边距，单位：英寸
+            sheet.SetMargin(MarginType.RightMargin, 0.1); // 右边距，单位：英寸
 
             // 创建表头样式
             ICellStyle headerStyle = workbook.CreateCellStyle();
@@ -1083,17 +1091,23 @@ namespace ZR.Admin.WebApi.Controllers.Business
             wrapTextStyle.BorderBottom = BorderStyle.Thin; // 下边框
             wrapTextStyle.BorderLeft = BorderStyle.Thin; // 左边框
             wrapTextStyle.BorderRight = BorderStyle.Thin; // 右边框
+          // wrapTextStyle.ShrinkToFit = true; // 启用字体缩小以适应单元格
 
             wrapTextStyle.WrapText = true; // 启用自动换行
-            wrapTextStyle.ShrinkToFit = true; // 启用字体缩小以适应单元格
             wrapTextStyle.VerticalAlignment = VerticalAlignment.Center;
+            IFont fontAs = workbook.CreateFont();
+            fontAs.FontName = "微软雅黑";
+            fontAs.FontHeightInPoints = 10;
+            wrapTextStyle.SetFont(fontAs);
+
             IFont fontss = workbook.CreateFont();
+            fontss.FontName = "微软雅黑";
             fontss.FontHeightInPoints = 10;
-            wrapTextStyle.SetFont(fontss);
 
             ICellStyle wrapTextStyleS = workbook.CreateCellStyle();
-            wrapTextStyleS.WrapText = true; // 启用自动换行
             wrapTextStyleS.ShrinkToFit = true; // 启用字体缩小以适应单元格
+
+            wrapTextStyleS.WrapText = true; // 启用自动换行
             wrapTextStyleS.VerticalAlignment = VerticalAlignment.Center;
             IFont fonstss = workbook.CreateFont();
             fonstss.FontHeightInPoints = 10;
@@ -1216,13 +1230,14 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
                 // 第四行: 药品表头
                 IRow row4 = sheet.CreateRow(rownums);
+                ICellStyle heads = CloneCellStyle(workbook,wrapTextStyle);
                 string[] headers = { "药品名称", "规格", "单位", "数量", "批价", "批价金额", "零价", "零售金额", "生产厂家", "批号", "有效期" };
                 for (int f = 0; f < headers.Length; f++)
                 {
                     row4.CreateCell(f).SetCellValue(headers[f]);
                     ICell cell = row4.CreateCell(f);
                     cell.SetCellValue(headers[f]);
-                    cell.CellStyle = wrapTextStyle;
+                    cell.CellStyle = heads;
                 }
                 rownums++;
                 int p = alleout[i].Drugs.Count + rownums;
@@ -1257,10 +1272,10 @@ namespace ZR.Admin.WebApi.Controllers.Business
                         // 大写金额行
                         IRow prow9 = sheet.CreateRow(rownums);
                         ICell pcerow90 = prow9.CreateCell(1);
-                        pcerow90.SetCellValue($"大写批价金额:{alleout[i].ChinaSumSaleCost}");
+                        pcerow90.SetCellValue($"大写批价金额:{alleout[i].ChinaSumApproveCost}");
                         pcerow90.CellStyle = wrapTextStyle;
                         ICell pcerow91 = prow9.CreateCell(6);
-                        pcerow91.SetCellValue($"大写零售金额:{alleout[i].ChinaSumApproveCost}");
+                        pcerow91.SetCellValue($"大写零售金额:{alleout[i].ChinaSumSaleCost}"); 
                         pcerow91.CellStyle = wrapTextStyle;
                         sheet.AddMergedRegion(new CellRangeAddress(rownums, rownums, 1, 5));
                         sheet.AddMergedRegion(new CellRangeAddress(rownums, rownums, 6, 11));
@@ -1368,17 +1383,22 @@ namespace ZR.Admin.WebApi.Controllers.Business
 
                     currentPageDrugCount++;
                     IRow row = sheet.CreateRow(f);
-                    row.Height = 20 * 20;
+                    row.HeightInPoints = 28;
                     var dr = alleout[i].Drugs[rownums - f];
                     // 创建并设置单元格值，同时应用边框样式
-                    ICell cell0 = row.CreateCell(0);
-                    cell0.SetCellValue($"{dr.TradeName}");
-                    cell0.CellStyle = wrapTextStyle;
+                    //ICell cell0 = row.CreateCell(0);
+                    //cell0.SetCellValue($"{dr.TradeName}");
+                    ICellStyle TradeNamecell = CloneCellStyle(workbook, wrapTextStyle);
+                    ////cell0.CellStyle = TradeNamecell;
+                    SetCellValueAutoFit(row, 0, dr.TradeName, TradeNamecell, fontss, sheet, 0, 28);
+           
+                    //ICell cell1 = row.CreateCell(1);                    
+                    //cell1.SetCellValue($"{dr.Specs}");
+                    ICellStyle Specscell = CloneCellStyle(workbook, wrapTextStyle);
+                    //cell1.CellStyle = Specscell;
+                    SetCellValueAutoFit(row, 1, dr.Specs, Specscell, fontss, sheet, 1, 28);
 
-                    ICell cell1 = row.CreateCell(1);
-                    cell1.SetCellValue($"{dr.Specs}");
-                    cell1.CellStyle = wrapTextStyle;
-
+            
                     ICell cell2 = row.CreateCell(2);
                     cell2.SetCellValue($"{dr.PackUnit}");
                     cell2.CellStyle = wrapTextStyle;
@@ -1404,20 +1424,24 @@ namespace ZR.Admin.WebApi.Controllers.Business
                     cell7.CellStyle = wrapTextStyle;
 
 
-                    // 设置规格列
-                    ICell specCell = row.CreateCell(8);
-
-                    specCell.SetCellValue($"{dr.ProducerCode}");
-                    specCell.CellStyle = wrapTextStyle; // 应用自动换行样式
-                    //specCell.CellStyle = borderStyle; // 也可以应用边框样式
+                    //// 设置规格列
+                    //ICell specCell = row.CreateCell(8);
+                    //specCell.SetCellValue($"{dr.ProducerCode}");
+                    ////specCell.CellStyle = wrapTextStyle; // 应用自动换行样式
+                    ICellStyle ProducerCodecell = CloneCellStyle(workbook, wrapTextStyle);
+                    //specCell.CellStyle = ProducerCodecell;
+                    SetCellValueAutoFit(row, 8, dr.ProducerCode, ProducerCodecell, fontss, sheet, 8, 28);
+                    
 
                     ICell cell9 = row.CreateCell(9);
                     cell9.SetCellValue($"{dr.BatchNo}");
                     cell9.CellStyle = wrapTextStyle;
 
-                    ICell cell10 = row.CreateCell(10);
-                    cell10.SetCellValue($"{dr.ValidDate}");
-                    cell10.CellStyle = wrapTextStyle;
+                    //ICell cell10 = row.CreateCell(10);
+                    //cell10.SetCellValue($"{dr.ValidDate}");
+                    ICellStyle ValidDatecell = CloneCellStyle(workbook, wrapTextStyle);
+                    //cell10.CellStyle = ValidDatecell;
+                    SetCellValueAutoFit(row, 10, dr.ValidDate, ValidDatecell, fontss, sheet, 10, 28);
 
 
                     rownums++;
@@ -1508,20 +1532,12 @@ namespace ZR.Admin.WebApi.Controllers.Business
                         cell10.CellStyle = borderStyles; // 下边框
                     }
                 }
-
-
-
-                //从当前行开始 无记录 每次执行到时判断  当大于时 20.5时 就开始 rowsnum++;
-
-
-                //sheet.AddMergedRegion(new CellRangeAddress(rownums, rownums, 0, 2));
+               
 
                 rownums++;
                 rownums++;
                 rownums++;
-                //var footer = sheet.Header;
-                //footer.Left = "当前第 &P 页，共 &N 页";
-
+        
                 ////footer.Center = "";
                 //sheet.SetRowBreak(rownums++);
 
@@ -1544,6 +1560,121 @@ namespace ZR.Admin.WebApi.Controllers.Business
             workbook.Close();
             return ExportExcel(fullPath, sFileName);
         }
+        // 固定列宽和行高，且数据能完全显示的实现方案
+        void SetCellValueAutoFit(
+        IRow row,
+        int cellIndex,
+        string text,
+        ICellStyle style,
+        IFont baseFont, // 这里传入原始字体
+        ISheet sheet,
+        int columnIndex,
+        int fixedRowHeightInPoints)
+        {
+            IWorkbook workbook = sheet.Workbook;
+            ICell cell = row.CreateCell(cellIndex);
+            cell.SetCellValue(text);
 
+            // **关键：创建一个独立的字体，避免影响外部样式**
+            IFont font = workbook.CreateFont();
+            font.FontName = baseFont.FontName;
+            font.Boldweight = baseFont.Boldweight;
+            font.Color = baseFont.Color;
+            font.IsItalic = baseFont.IsItalic;
+            font.Underline = baseFont.Underline;
+
+            int maxFontSize = 10;
+            int minFontSize = 2;
+            font.FontHeightInPoints = (short)maxFontSize;
+
+            // **关键：克隆 style，防止修改外部 wrapTextStyle**
+            ICellStyle newStyle = workbook.CreateCellStyle();
+            newStyle.CloneStyleFrom(style);
+            newStyle.SetFont(font);
+
+            // 计算列宽所能容纳的字符数
+            int colWidthIn256 = (int)sheet.GetColumnWidth(columnIndex);
+            int colWidthInChars = colWidthIn256 / 256;
+            decimal estimatedCharWidth = 1.5M; // 估算：一个字符大约占 2 个单位宽度
+            int maxCharsPerLine = (int)(colWidthInChars / estimatedCharWidth);
+
+            // 自动换行
+            List<string> WrapText(string str, int maxLen)
+            {
+                List<string> lines = new List<string>();
+                for (int i = 0; i < str.Length; i += maxLen)
+                {
+                    int len = Math.Min(maxLen, str.Length - i);
+                    lines.Add(str.Substring(i, len));
+                }
+                return lines;
+            }
+
+            int currentFontSize = maxFontSize;
+            while (currentFontSize >= minFontSize)
+            {
+                int estimatedLineHeight = currentFontSize + 2;
+                List<string> wrappedLines = WrapText(text, maxCharsPerLine);
+                int requiredHeight = wrappedLines.Count * estimatedLineHeight;
+
+                if (requiredHeight <= fixedRowHeightInPoints)
+                {
+                    break;
+                }
+                else
+                {
+                    currentFontSize--;
+                    font.FontHeightInPoints = (short)currentFontSize;
+                    newStyle.SetFont(font);
+                }
+            }
+
+            // 设置固定行高
+            row.HeightInPoints = fixedRowHeightInPoints;
+            cell.CellStyle = newStyle;
+        }
+
+
+        public ICellStyle CloneCellStyle(IWorkbook workbook, ICellStyle sourceStyle)
+        {
+            // 创建新的样式
+            ICellStyle newStyle = workbook.CreateCellStyle();
+
+            // 复制常见的样式属性
+            newStyle.Alignment = sourceStyle.Alignment;
+            newStyle.BorderBottom = sourceStyle.BorderBottom;
+            newStyle.BorderLeft = sourceStyle.BorderLeft;
+            newStyle.BorderRight = sourceStyle.BorderRight;
+            newStyle.BorderTop = sourceStyle.BorderTop;
+            newStyle.BottomBorderColor = sourceStyle.BottomBorderColor;
+            newStyle.DataFormat = sourceStyle.DataFormat;
+            newStyle.FillBackgroundColor = sourceStyle.FillBackgroundColor;
+            newStyle.FillForegroundColor = sourceStyle.FillForegroundColor;
+            newStyle.FillPattern = sourceStyle.FillPattern;
+            newStyle.Indention = sourceStyle.Indention;
+            newStyle.IsLocked = sourceStyle.IsLocked;
+            newStyle.LeftBorderColor = sourceStyle.LeftBorderColor;
+            newStyle.RightBorderColor = sourceStyle.RightBorderColor;
+            newStyle.Rotation = sourceStyle.Rotation;
+            newStyle.ShrinkToFit = sourceStyle.ShrinkToFit;
+            newStyle.VerticalAlignment = sourceStyle.VerticalAlignment;
+            newStyle.WrapText = sourceStyle.WrapText;
+
+            // 确保创建一个独立的字体对象
+            IFont sourceFont = workbook.GetFontAt(sourceStyle.FontIndex);
+            IFont newFont = workbook.CreateFont();
+
+            newFont.FontName = sourceFont.FontName;
+            newFont.FontHeight = sourceFont.FontHeight;
+            newFont.FontHeightInPoints = sourceFont.FontHeightInPoints;
+            newFont.Boldweight = sourceFont.Boldweight;
+            newFont.Color = sourceFont.Color;
+            newFont.IsItalic = sourceFont.IsItalic;
+            newFont.Underline = sourceFont.Underline;
+
+            // 重要：确保新字体是独立的，防止共享
+            newStyle.SetFont(newFont);
+            return newStyle;
+        }
     }
 }

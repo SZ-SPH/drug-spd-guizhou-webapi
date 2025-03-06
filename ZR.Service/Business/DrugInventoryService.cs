@@ -45,7 +45,7 @@ namespace ZR.Service.Business
         /// 获取详情
         /// </summary>
         /// <param name="Id"></param>
-        /// <returns></returns>········
+        /// <returns></returns>
         public DrugInventory GetInfo(int Id)
         {
             var response = Queryable()
@@ -54,7 +54,15 @@ namespace ZR.Service.Business
 
             return response;
         }
+        public DrugInventory GetInfos(long? InBillCode)
+        {
+            var response = Queryable()
+                .Where(x => x.InBillCode == InBillCode)
+                .First();
 
+            return response;
+        }
+        
         /// <summary>
         /// 添加采购退货
         /// </summary>

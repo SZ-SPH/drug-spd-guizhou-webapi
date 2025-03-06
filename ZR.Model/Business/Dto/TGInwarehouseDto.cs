@@ -35,7 +35,8 @@ namespace ZR.Model.Business.Dto
         public decimal MixOutPrice { get; set; }
         public string ProductCode { get; set; }
 
-        
+        public string InName { get; set; }
+
         public int OnId { get; set; }
     }
     public class InwarhouseDetailDTO

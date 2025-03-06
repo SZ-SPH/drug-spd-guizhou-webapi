@@ -185,7 +185,11 @@ namespace ZR.Admin.WebApi.Controllers.Gui
                     beginTime = DateTime.Now.AddHours(-1).ToString("yyyy-M-d HH:mm:ss"), // 当前时间减去一小时并格式化
                     endTime = DateTime.Now.AddHours(1).ToString("yyyy-M-d HH:mm:ss")      // 当前时间加上一小时并格式化
                 };
-
+                //PhaInPlanInQuery planInQuery = new PhaInPlanInQuery
+                //{
+                //    beginTime = DateTime.Now.AddDays(-1).ToString("yyyy-M-d HH:mm:ss"), // 当前时间减去一小时并格式化
+                //    endTime = DateTime.Now.AddHours(1).ToString("yyyy-M-d HH:mm:ss")      // 当前时间加上一小时并格式化
+                //};
                 var x = await SendRequestsAsync(planInQuery);
                 foreach (var item in x)
                 {
